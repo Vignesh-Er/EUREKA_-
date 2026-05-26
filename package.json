@@ -1,0 +1,19 @@
+{
+  "name": "eureka-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Project Eureka - AI Academic & Career Intelligence Platform (Monorepo Root)",
+  "scripts": {
+    "frontend:install": "npm --prefix b_vNy9IRZa6ez-1774112432284 install",
+    "frontend:dev": "npm --prefix b_vNy9IRZa6ez-1774112432284 run dev",
+    "frontend:build": "npm --prefix b_vNy9IRZa6ez-1774112432284 run build",
+    "frontend:start": "npm --prefix b_vNy9IRZa6ez-1774112432284 run start",
+    "backend:install": "pip install -r backend/requirements.txt",
+    "backend:dev": "cd backend && python main.py"
+  },
+  "dependencies": {
+    "next": "16.2.0",
+    "react": "19.2.4",
+    "react-dom": "19.2.4"
+  }
+}
