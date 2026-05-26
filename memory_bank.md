@@ -39,4 +39,6 @@ This map outlines the connection between the frontend screens, their backend rou
 * **OBE Accreditation Engine**: Implemented `analyze_exam_paper` in `accreditation_engine.py` using the NVIDIA NIM API (`qwen/qwen3.5-122b-a10b`) to classify question sheets under Bloom's Levels and Course Outcomes. Added router endpoints in `accreditation.py` and connected the Next.js frontend to fetch live data and render an interactive audit portal.
 * **Placement Intelligence Engine**: Connected `placement_engine.py` to persistent student digital twin contexts. Implemented real-time corporate matches and gap checklists via NIM. Added dynamic endpoints in `placement.py` and connected the Next.js frontend page, incorporating a premium AI Skill-Gap Tutor sandbox.
 * **Root Documentation**: Created a unified, high-fidelity monorepo `README.md` at the root directory outlining the platform's inspiration, 8-engine architecture, and step-by-step startup instructions, and pushed all updates to GitHub.
+* **Local Launch**: Started the FastAPI backend server on `http://localhost:8000` (uvicorn process) and the Next.js development server on `http://localhost:3000` concurrently as background tasks.
+
 
