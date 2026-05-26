@@ -1,0 +1,6 @@
+{
+  "framework": "nextjs",
+  "installCommand": "npm ci --prefix b_vNy9IRZa6ez-1774112432284",
+  "buildCommand": "npm --prefix b_vNy9IRZa6ez-1774112432284 run build",
+  "outputDirectory": "b_vNy9IRZa6ez-1774112432284/.next"
+}

@@ -5,13 +5,16 @@
   "description": "Project Eureka - AI Academic & Career Intelligence Platform (Monorepo Root)",
   "scripts": {
     "build": "npm --prefix b_vNy9IRZa6ez-1774112432284 run build",
-    "vercel-build": "npm --prefix b_vNy9IRZa6ez-1774112432284 install && npm --prefix b_vNy9IRZa6ez-1774112432284 run build",
+    "vercel-build": "npm --prefix b_vNy9IRZa6ez-1774112432284 ci && npm --prefix b_vNy9IRZa6ez-1774112432284 run build",
     "frontend:install": "npm --prefix b_vNy9IRZa6ez-1774112432284 install",
     "frontend:dev": "npm --prefix b_vNy9IRZa6ez-1774112432284 run dev",
     "frontend:build": "npm --prefix b_vNy9IRZa6ez-1774112432284 run build",
     "frontend:start": "npm --prefix b_vNy9IRZa6ez-1774112432284 run start",
     "backend:install": "pip install -r backend/requirements.txt",
     "backend:dev": "cd backend && python main.py"
+  },
+  "engines": {
+    "node": "24.x"
   },
   "dependencies": {
     "next": "16.2.0",

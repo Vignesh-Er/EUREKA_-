@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { cn } from "@/lib/utils"
 import { askEurekaAI } from "@/lib/eureka-ai"
+import { streamFromAPI } from "@/lib/stream-client"
 import { EurekaRichMessage } from "@/components/chat/eureka-rich-message"
 import { useAuth } from "@/lib/auth-context"
 import { buildEurekaAIUserContext } from "@/lib/eureka-ai-context"
@@ -115,35 +116,73 @@ export function EurekaChatbot() {
       .slice(-10)
       .map((msg) => ({ role: msg.role, content: msg.content }))
 
-    setMessages((prev) => [...prev, userMsg])
+    const assistantMsgId = (Date.now() + 1).toString()
+    const assistantMsg: Message = { id: assistantMsgId, role: "assistant", content: "..." }
+
+    setMessages((prev) => [...prev, userMsg, assistantMsg])
     setInput("")
     setIsLoading(true)
 
-    try {
-      const aiResponse = await askEurekaAI({
-        question: text,
-        role: user?.role,
-        userId: user?.id,
-        currentPage: pathname,
-        conversation,
-        userContext,
-      })
+    let currentResponseText = ""
 
-      setMessages((prev) => [
-        ...prev,
-        { id: (Date.now() + 1).toString(), role: "assistant", content: aiResponse },
-      ])
-    } catch {
-      setMessages((prev) => [
-        ...prev,
+    try {
+      await streamFromAPI(
+        "/exam-prep/chat/stream",
         {
-          id: (Date.now() + 1).toString(),
-          role: "assistant",
-          content:
-            "I couldn't reach the AI service just now. Please try again in a moment, or ask where to find a specific module and I will guide you.",
+          question: text,
+          role: user?.role,
+          userId: user?.id,
+          currentPage: pathname,
+          conversation,
+          userContext,
         },
-      ])
-    } finally {
+        (tokenText) => {
+          if (currentResponseText === "") {
+            // Remove the initial ellipsis "..." when first actual token arrives
+            currentResponseText = tokenText
+          } else {
+            currentResponseText += tokenText
+          }
+          setMessages((prev) =>
+            prev.map((msg) =>
+              msg.id === assistantMsgId
+                ? { ...msg, content: currentResponseText }
+                : msg
+            )
+          )
+        },
+        () => {
+          setIsLoading(false)
+        },
+        (error) => {
+          console.error("Streaming failed, falling back to static", error)
+          setMessages((prev) =>
+            prev.map((msg) =>
+              msg.id === assistantMsgId
+                ? {
+                    ...msg,
+                    content:
+                      "I couldn't reach the real-time AI service just now. Please check if your backend is running or try again later.",
+                  }
+                : msg
+            )
+          )
+          setIsLoading(false)
+        }
+      )
+    } catch (err) {
+      console.error("Failed to run streaming call", err)
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === assistantMsgId
+            ? {
+                ...msg,
+                content:
+                  "I encountered an unexpected error trying to initialize connection. Please try again.",
+              }
+            : msg
+        )
+      )
       setIsLoading(false)
     }
   }

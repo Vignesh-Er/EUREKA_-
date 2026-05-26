@@ -41,13 +41,31 @@ def decode_access_token(token: str) -> Optional[dict]:
     if token and token.startswith("demo-token-"):
         user_id = token.replace("demo-token-", "")
         if user_id == "prof-1":
-            return {"sub": "prof@university.edu", "user_id": "prof-1", "role": "professor"}
+            return {
+                "sub": "prof@university.edu",
+                "user_id": "prof-1",
+                "role": "professor",
+                "assigned_courses": ["CS101", "CS201"]
+            }
         elif user_id == "student-1":
-            return {"sub": "student@university.edu", "user_id": "student-1", "role": "student"}
+            return {
+                "sub": "student@university.edu",
+                "user_id": "student-1",
+                "role": "student"
+            }
         elif user_id == "admin-1":
-            return {"sub": "admin@university.edu", "user_id": "admin-1", "role": "admin"}
+            return {
+                "sub": "admin@university.edu",
+                "user_id": "admin-1",
+                "role": "admin"
+            }
         elif user_id == "parent-1":
-            return {"sub": "parent@university.edu", "user_id": "parent-1", "role": "parent"}
+            return {
+                "sub": "parent@university.edu",
+                "user_id": "parent-1",
+                "role": "parent",
+                "linked_student_id": "student-1"
+            }
     try:
         return jwt.decode(token, settings.jwt_secret_key, algorithms=[settings.jwt_algorithm])
     except JWTError:

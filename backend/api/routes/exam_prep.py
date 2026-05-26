@@ -1,6 +1,7 @@
 import json
 import re
 from fastapi import APIRouter, File, UploadFile, Form, Depends, HTTPException
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 import httpx
 from typing import List, Dict, Any, Literal
@@ -605,6 +606,112 @@ async def general_exam_chat(req: QuestionRequest):
     if not answer or answer.startswith("Mocked AI response"):
         answer = _local_eureka_assistant_reply(req)
     return {"answer": answer}
+
+
+@router.post("/chat/stream")
+async def general_exam_chat_stream(req: QuestionRequest):
+    """General chat for exam flow, summary, and questions with real-time SSE streaming"""
+    normalized_role = (req.role or "student").strip().lower()
+    if req.user_id:
+        digital_twin_store.ensure_twin(user_id=req.user_id, role=normalized_role)
+        if isinstance(req.user_context, dict) and req.user_context:
+            digital_twin_store.update_context(
+                user_id=req.user_id,
+                role=normalized_role,
+                context_updates=req.user_context,
+                source="chat-user-context",
+            )
+        extracted_updates = _extract_user_input_updates(req.question)
+        if extracted_updates:
+            digital_twin_store.update_custom_inputs(
+                user_id=req.user_id,
+                role=normalized_role,
+                custom_inputs=extracted_updates,
+                source="chat-message-inputs",
+            )
+
+    effective_user_context = _resolve_effective_user_context(req)
+    history_lines = "\n".join(
+        [f"{message.role.upper()}: {message.content}" for message in req.conversation[-8:]]
+    ) or "No previous conversation provided."
+    user_context_text = (
+        json.dumps(effective_user_context, ensure_ascii=False, default=str)[:12000]
+        if effective_user_context else "No user context provided."
+    )
+
+    system_prompt = dedent(
+        f"""
+        You are Eureka AI inside the Project Eureka web app.
+        You must provide highly accurate, actionable answers for:
+        1) How to use the app (navigation, module usage, role-specific workflows)
+        2) Academic support (exam planning, concept explanations, study strategy)
+
+        App guidance:
+        - Students use modules like AI Mastery Forge, Digital Twin, Discovery Lab, Exam Prep, Career Pathways, Placement Intelligence.
+        - Professors use modules like Upload Content, Syllabus Coverage, CO-PO Mapping, Student Feedback, Tool Utilization, Research & Grants.
+        - Admins use modules like Executive Summary, Accreditation, Staff Performance, Substitutes, Procurement, Analytics.
+        - For exam-specific guidance, route users to /dashboard/exam-prep.
+        - Known Exam Prep capabilities: subject selection, AI guided summary, topic explainers, notes upload, asking questions on uploaded notes, and interactive roadmap.
+        - When user-specific values are needed, use the digital twin file context first.
+        { _format_role_navigation(req.role) }
+
+        Response rules:
+        - If the user asks how to do something in Eureka, mention the exact dashboard page path when relevant.
+        - Keep answers concise, practical, and step-oriented.
+        - Output must be readable markdown (not a wall of text).
+        - Use short sections with headings and bullets.
+        - Keep each bullet short and clear.
+        - Use 1 to 3 relevant emojis for friendliness.
+        - Use ONLY the values present in provided user context for personal scores/levels/company lists.
+        - Never invent personal metrics, readiness percentages, or company names.
+        - If required personal data is missing, ask the user to provide the missing inputs.
+        - Do not reference buttons, tabs, widgets, or workflows that are not in the known capability list.
+        - If a feature is outside known context, say that explicitly instead of inventing details.
+        - If the question is academic, answer as a tutor with clear structure.
+        - End with a small "Next" suggestion when useful.
+        """
+    ).strip()
+
+    user_prompt = dedent(
+        f"""
+        User role: {req.role or "unknown"}
+        User ID: {req.user_id or "unknown"}
+        Current page: {req.current_page or "unknown"}
+        Conversation history:
+        {history_lines}
+        User context JSON:
+        {user_context_text}
+
+        User question:
+        {req.question}
+        """
+    ).strip()
+
+    messages = [
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": user_prompt}
+    ]
+
+    from services.nvidia_engines import NVIDIAEngineBase
+    engine_base = NVIDIAEngineBase()
+
+    async def stream_generator():
+        async for chunk in engine_base._stream_nim_api(
+            model=settings.nim_default_model,
+            messages=messages,
+            engine_name="exam_prep"
+        ):
+            yield chunk
+
+    return StreamingResponse(
+        stream_generator(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "X-Accel-Buffering": "no",
+            "Connection": "keep-alive"
+        }
+    )
 
 
 @router.get("/digital-twin/{user_id}")

@@ -18,6 +18,7 @@
 **/.venv/
 **/__pycache__/
 **/.pytest_cache/
+**/*.tsbuildinfo
 **/*.pyc
 **/*.pyo
 **/*.pyd
@@ -29,3 +30,5 @@ node_portable/
 tools/
 backend/digital_twin/
 temp_lifespan.txt
+**/*.db
+**/data/*.db

@@ -255,7 +255,7 @@ export default function PlacementPage() {
                       <div className="flex items-center gap-3">
                         <span className="text-destructive font-semibold text-xs">Gap: {gap.required - gap.current}%</span>
                         <Button 
-                          size="xs" 
+                          size="sm"
                           variant="outline" 
                           className="text-violet-400 hover:text-violet-300 border-violet-500/30 gap-1 bg-violet-500/5 hover:bg-violet-500/10"
                           onClick={() => handleStartTutor(gap.skill)}

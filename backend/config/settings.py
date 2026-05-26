@@ -12,7 +12,12 @@ class Settings(BaseSettings):
     debug: bool = True
     secret_key: str = "change-me-in-production"
 
-    database_url: str = "postgresql+asyncpg://eureka:eureka_password@localhost:5432/eureka"
+    database_url: str = "sqlite+aiosqlite:///./data/eureka.db"
+    redis_url: str = ""
+
+    nim_default_model: str = "qwen/qwen3.5-122b-a10b"
+    nim_vision_model: str = "qwen/qwen3.5-397b-a17b"
+    nim_fast_model: str = "qwen/qwen3.5-35b-a3b"
 
     qdrant_host: str = "localhost"
     qdrant_port: int = 6333
@@ -53,6 +58,16 @@ class Settings(BaseSettings):
     @property
     def supabase_enabled(self) -> bool:
         return bool(self.supabase_url and self.supabase_anon_key)
+
+    from pydantic import model_validator
+    @model_validator(mode="after")
+    def validate_production_keys(self) -> 'Settings':
+        if self.app_env == "production":
+            if self.secret_key == "change-me-in-production" or self.jwt_secret_key == "change-me-in-production":
+                raise ValueError("In production, 'secret_key' and 'jwt_secret_key' must be changed from default values!")
+            if "sqlite" in self.database_url:
+                raise ValueError("SQLite is not allowed in production environment. A PostgreSQL DATABASE_URL must be supplied!")
+        return self
 
 
 settings = Settings()

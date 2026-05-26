@@ -60,7 +60,13 @@ export default function ContextCardsPage() {
       {/* Deep Roadmap Modal */}
       <Dialog open={!!selectedTopic} onOpenChange={(open) => !open && setSelectedTopic(null)}>
         <DialogContent className="max-w-none w-screen h-screen m-0 p-0 rounded-none bg-background/95 backdrop-blur-3xl border-0 overflow-hidden">
-          {selectedTopic && <DeepRoadmapUI subject={selectedTopic} />}
+          {selectedTopic && (
+            <DeepRoadmapUI
+              subject={selectedTopic}
+              isOpen={!!selectedTopic}
+              onClose={() => setSelectedTopic(null)}
+            />
+          )}
         </DialogContent>
       </Dialog>
       

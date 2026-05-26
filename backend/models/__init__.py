@@ -23,6 +23,17 @@ from models.placement import PlacementDrive, StudentApplication, PlacementReadin
 from models.staff_performance import TeachingIntelligenceScore, PerformanceTrend, ReviewTalkingPoint, SyllabusCoverage
 from models.parent import ParentAlert, MonthlyReport
 from models.industry import IndustryProblem, AlumniMentor, JDPulseEntry, ProjectShowcase
+from models.foundation import (
+    AuditLog,
+    Notification,
+    PromptVersion,
+    GradingSubmission,
+    GradingFile,
+    RiskAssessment,
+    DraftSubmission,
+    CreditPortfolio,
+    FeatureFlag,
+)
 
 __all__ = [
     "User",
@@ -64,4 +75,13 @@ __all__ = [
     "AlumniMentor",
     "JDPulseEntry",
     "ProjectShowcase",
+    "AuditLog",
+    "Notification",
+    "PromptVersion",
+    "GradingSubmission",
+    "GradingFile",
+    "RiskAssessment",
+    "DraftSubmission",
+    "CreditPortfolio",
+    "FeatureFlag",
 ]

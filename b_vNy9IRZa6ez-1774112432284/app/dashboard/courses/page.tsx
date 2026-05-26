@@ -143,7 +143,7 @@ export default function CoursesPage() {
                 </div>
               </CardContent>
               <CardFooter className="pt-0 flex gap-3">
-                <Button className="flex-1 bg-primary/20 text-primary hover:bg-primary/30" onClick={() => toast({ title: "Virtual Class", description: `Joining ${course.title} environment...` })}>
+                <Button className="flex-1 bg-primary/20 text-primary hover:bg-primary/30" onClick={() => toast({ title: "Virtual Class", description: `Joining ${course.name} environment...` })}>
                   <PlayCircle className="w-4 h-4 mr-2" /> Enter Virtual Class
                 </Button>
                 <Button variant="outline" className="flex-1 border-border/50" onClick={() => toast({ title: "Materials Reqs", description: "Loading synced course documents & slides..." })}>

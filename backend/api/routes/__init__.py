@@ -15,6 +15,7 @@ from .parent_portal import router as parent_portal_router
 from .industry_connect import router as industry_connect_router
 from .research_grants import router as research_grants_router
 from .alumni import router as alumni_router
+from .admin_status import router as admin_status_router
 
 __all__ = [
     "admin_router",
@@ -32,4 +33,5 @@ __all__ = [
     "tool_utilization_router",
     "research_grants_router",
     "alumni_router",
+    "admin_status_router",
 ]

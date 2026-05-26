@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from 'next'
-import { Space_Grotesk, Playfair_Display, JetBrains_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { ThemeProvider } from '@/components/theme-provider'
 import { Toaster } from '@/components/ui/sonner'
@@ -7,21 +6,6 @@ import { AuthProvider } from '@/lib/auth-context'
 import CosmicBackground from '@/components/CosmicBackground'
 import { EurekaChatbot } from '@/components/chat/eureka-chatbot'
 import './globals.css'
-
-const spaceGrotesk = Space_Grotesk({
-  subsets: ['latin'],
-  variable: '--font-space-grotesk'
-})
-
-const playfair = Playfair_Display({
-  subsets: ['latin'],
-  variable: '--font-playfair'
-})
-
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ['latin'],
-  variable: '--font-jetbrains-mono'
-})
 
 export const metadata: Metadata = {
   title: 'Eureka - AI Academic Intelligence Platform',
@@ -64,7 +48,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${spaceGrotesk.variable} ${playfair.variable} ${jetbrainsMono.variable} font-sans antialiased`}>
+      <body className="font-sans antialiased">
         <CosmicBackground />
         <ThemeProvider
           attribute="class"

@@ -53,21 +53,23 @@ export default function CosmicBackground() {
   const ref = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    const c = ref.current;
-    if (!c) return;
-    const ctx = c.getContext('2d');
-    if (!ctx) return;
+    const canvasRef = ref.current;
+    if (!canvasRef) return;
+    const contextRef = canvasRef.getContext('2d');
+    if (!contextRef) return;
+    const canvas: HTMLCanvasElement = canvasRef;
+    const context: CanvasRenderingContext2D = contextRef;
 
     let alive = true;
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    const resize = () => { c.width = window.innerWidth; c.height = window.innerHeight; };
+    const resize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; };
     resize();
     window.addEventListener('resize', resize);
 
     /* ── Static stars (fixed opacity, no twinkle) ── */
     const stars: Star[] = [];
-    const W = c.width, H = c.height;
+    const W = canvas.width, H = canvas.height;
     for (let i = 0; i < 800; i++) {
       stars.push({
         x: Math.random() * W,
@@ -149,10 +151,10 @@ export default function CosmicBackground() {
       // Spawn from random edge
       const edge = Math.floor(Math.random() * 4);
       let x = 0, y = 0, angle = 0;
-      if (edge === 0) { x = -20; y = Math.random() * c.height; angle = -0.3 + Math.random() * 0.6; }
-      else if (edge === 1) { x = c.width + 20; y = Math.random() * c.height; angle = Math.PI - 0.3 + Math.random() * 0.6; }
-      else if (edge === 2) { x = Math.random() * c.width; y = -20; angle = Math.PI / 2 - 0.4 + Math.random() * 0.8; }
-      else { x = Math.random() * c.width; y = c.height + 20; angle = -Math.PI / 2 - 0.4 + Math.random() * 0.8; }
+      if (edge === 0) { x = -20; y = Math.random() * canvas.height; angle = -0.3 + Math.random() * 0.6; }
+      else if (edge === 1) { x = canvas.width + 20; y = Math.random() * canvas.height; angle = Math.PI - 0.3 + Math.random() * 0.6; }
+      else if (edge === 2) { x = Math.random() * canvas.width; y = -20; angle = Math.PI / 2 - 0.4 + Math.random() * 0.8; }
+      else { x = Math.random() * canvas.width; y = canvas.height + 20; angle = -Math.PI / 2 - 0.4 + Math.random() * 0.8; }
 
       craft.push({
         x, y, angle,
@@ -180,8 +182,8 @@ export default function CosmicBackground() {
 
       const colors = ['#FFFFFF', '#E0F0FF', '#D4AAFF', '#FFE8AA'];
       meteors.push({
-        sx: c.width * (0.15 + Math.random() * 0.85),
-        sy: c.height * Math.random() * 0.35,
+        sx: canvas.width * (0.15 + Math.random() * 0.85),
+        sy: canvas.height * Math.random() * 0.35,
         angle: Math.PI * (1.05 + Math.random() * 0.35),
         speed: 700 + Math.random() * 500,
         len: 70 + Math.random() * 120,
@@ -208,16 +210,16 @@ export default function CosmicBackground() {
       const dt = (now - last) / 1000;
       last = now;
 
-      ctx.clearRect(0, 0, c.width, c.height);
+      context.clearRect(0, 0, canvas.width, canvas.height);
 
       // 1) Static nebulas (pre-rendered)
-      ctx.drawImage(nebOff, 0, 0);
+      context.drawImage(nebOff, 0, 0);
 
       // 2) Static stars (pre-rendered)
-      ctx.drawImage(starOff, 0, 0);
+      context.drawImage(starOff, 0, 0);
 
       // 3) Spacecraft
-      ctx.save();
+      context.save();
       for (let i = craft.length - 1; i >= 0; i--) {
         const s = craft[i];
         const age = now - s.born;
@@ -227,7 +229,7 @@ export default function CosmicBackground() {
         s.y += Math.sin(s.angle) * s.speed * dt;
 
         // Off-screen check
-        if (s.x < -60 || s.x > c.width + 60 || s.y < -60 || s.y > c.height + 60) {
+        if (s.x < -60 || s.x > canvas.width + 60 || s.y < -60 || s.y > canvas.height + 60) {
           craft.splice(i, 1); continue;
         }
 
@@ -240,51 +242,51 @@ export default function CosmicBackground() {
         const trailLen = 18 + s.size * 3;
         const tx = s.x - Math.cos(s.angle) * trailLen;
         const ty = s.y - Math.sin(s.angle) * trailLen;
-        const tg = ctx.createLinearGradient(tx, ty, s.x, s.y);
+        const tg = context.createLinearGradient(tx, ty, s.x, s.y);
         tg.addColorStop(0, rgba(s.glowColor, 0));
         tg.addColorStop(0.6, rgba(s.glowColor, alpha * 0.3));
         tg.addColorStop(1, rgba(s.glowColor, alpha * 0.7));
-        ctx.strokeStyle = tg;
-        ctx.lineWidth = s.size * 0.4;
-        ctx.beginPath();
-        ctx.moveTo(tx, ty);
-        ctx.lineTo(s.x, s.y);
-        ctx.stroke();
+        context.strokeStyle = tg;
+        context.lineWidth = s.size * 0.4;
+        context.beginPath();
+        context.moveTo(tx, ty);
+        context.lineTo(s.x, s.y);
+        context.stroke();
 
         // Craft body (small diamond/arrow shape)
-        ctx.save();
-        ctx.translate(s.x, s.y);
-        ctx.rotate(s.angle);
-        ctx.globalAlpha = alpha;
+        context.save();
+        context.translate(s.x, s.y);
+        context.rotate(s.angle);
+        context.globalAlpha = alpha;
 
         // Arrow body
-        ctx.fillStyle = rgba('#FFFFFF', 0.8);
-        ctx.beginPath();
-        ctx.moveTo(s.size, 0);                     // nose
-        ctx.lineTo(-s.size * 0.6, -s.size * 0.4);  // top wing
-        ctx.lineTo(-s.size * 0.3, 0);               // notch
-        ctx.lineTo(-s.size * 0.6, s.size * 0.4);   // bottom wing
-        ctx.closePath();
-        ctx.fill();
+        context.fillStyle = rgba('#FFFFFF', 0.8);
+        context.beginPath();
+        context.moveTo(s.size, 0);                     // nose
+        context.lineTo(-s.size * 0.6, -s.size * 0.4);  // top wing
+        context.lineTo(-s.size * 0.3, 0);               // notch
+        context.lineTo(-s.size * 0.6, s.size * 0.4);   // bottom wing
+        context.closePath();
+        context.fill();
 
         // Engine glow dot
-        const eg = ctx.createRadialGradient(-s.size * 0.3, 0, 0, -s.size * 0.3, 0, s.size * 1.5);
+        const eg = context.createRadialGradient(-s.size * 0.3, 0, 0, -s.size * 0.3, 0, s.size * 1.5);
         eg.addColorStop(0, rgba(s.glowColor, 0.6));
         eg.addColorStop(0.4, rgba(s.glowColor, 0.15));
         eg.addColorStop(1, rgba(s.glowColor, 0));
-        ctx.fillStyle = eg;
-        ctx.beginPath();
-        ctx.arc(-s.size * 0.3, 0, s.size * 1.5, 0, Math.PI * 2);
-        ctx.fill();
+        context.fillStyle = eg;
+        context.beginPath();
+        context.arc(-s.size * 0.3, 0, s.size * 1.5, 0, Math.PI * 2);
+        context.fill();
 
-        ctx.restore();
+        context.restore();
       }
-      ctx.restore();
+      context.restore();
 
       // 4) Shooting stars (rare)
       if (!reducedMotion) {
-        ctx.save();
-        ctx.globalCompositeOperation = 'lighter';
+        context.save();
+        context.globalCompositeOperation = 'lighter';
         for (let i = meteors.length - 1; i >= 0; i--) {
           const m = meteors[i];
           m.elapsed += dt;
@@ -306,41 +308,41 @@ export default function CosmicBackground() {
           const ny = Math.sin(m.angle + Math.PI / 2);
           const hw = m.w * 0.5;
 
-          const lg = ctx.createLinearGradient(tx, ty, hx, hy);
+          const lg = context.createLinearGradient(tx, ty, hx, hy);
           lg.addColorStop(0, 'rgba(255,255,255,0)');
           lg.addColorStop(0.5, rgba(m.color, 0.15));
           lg.addColorStop(0.85, rgba(m.color, 0.55));
           lg.addColorStop(1, rgba(m.color, a));
 
-          ctx.fillStyle = lg;
-          ctx.beginPath();
-          ctx.moveTo(hx + nx * hw, hy + ny * hw);
-          ctx.lineTo(hx - nx * hw, hy - ny * hw);
-          ctx.lineTo(tx, ty);
-          ctx.closePath();
-          ctx.fill();
+          context.fillStyle = lg;
+          context.beginPath();
+          context.moveTo(hx + nx * hw, hy + ny * hw);
+          context.lineTo(hx - nx * hw, hy - ny * hw);
+          context.lineTo(tx, ty);
+          context.closePath();
+          context.fill();
 
           // Head glow
-          const hg = ctx.createRadialGradient(hx, hy, 0, hx, hy, m.w * 6);
+          const hg = context.createRadialGradient(hx, hy, 0, hx, hy, m.w * 6);
           hg.addColorStop(0, rgba(m.color, a * 0.4));
           hg.addColorStop(0.4, rgba(m.color, a * 0.1));
           hg.addColorStop(1, rgba(m.color, 0));
-          ctx.fillStyle = hg;
-          ctx.beginPath();
-          ctx.arc(hx, hy, m.w * 6, 0, Math.PI * 2);
-          ctx.fill();
+          context.fillStyle = hg;
+          context.beginPath();
+          context.arc(hx, hy, m.w * 6, 0, Math.PI * 2);
+          context.fill();
 
           // Core
-          ctx.fillStyle = `rgba(255,255,255,${a})`;
-          ctx.beginPath();
-          ctx.arc(hx, hy, 1.2, 0, Math.PI * 2);
-          ctx.fill();
+          context.fillStyle = `rgba(255,255,255,${a})`;
+          context.beginPath();
+          context.arc(hx, hy, 1.2, 0, Math.PI * 2);
+          context.fill();
         }
-        ctx.restore();
+        context.restore();
       }
 
-      ctx.globalAlpha = 1;
-      ctx.globalCompositeOperation = 'source-over';
+      context.globalAlpha = 1;
+      context.globalCompositeOperation = 'source-over';
       raf = requestAnimationFrame(draw);
     }
 

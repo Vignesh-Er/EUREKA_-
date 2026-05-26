@@ -1,29 +1,44 @@
-"""Syllabus Coverage API routes."""
+"""Syllabus Coverage API routes with robust RBAC and response envelopes."""
 
-from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
-from services.auth import decode_access_token
+from fastapi import APIRouter, Depends
+from sqlalchemy.ext.asyncio import AsyncSession
+from database.session import get_db
+from services.rbac import RBACPolicy
 from services.syllabus_engine import syllabus_engine
+from api.response import success_response, error_response
 
 router = APIRouter(prefix="/syllabus", tags=["Syllabus"])
-security = HTTPBearer()
 
-def _require_admin_or_prof(credentials: HTTPAuthorizationCredentials = Depends(security)) -> dict:
-    payload = decode_access_token(credentials.credentials)
-    if not payload:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
-    if payload.get("role") not in ["admin", "professor"]:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Access denied")
-    return payload
 
 @router.get("/{course_id}/coverage")
-async def get_coverage(course_id: str, _: dict = Depends(_require_admin_or_prof)):
-    return await syllabus_engine.calculate_coverage(course_id)
+async def get_coverage(
+    course_id: str,
+    db: AsyncSession = Depends(get_db),
+    current_user: dict = Depends(RBACPolicy.require_professor_of("course_id"))
+):
+    """Retrieve syllabus coverage analysis. RBAC: Professor of course or Admin."""
+    result = await syllabus_engine.calculate_coverage(course_id, db=db)
+    source = "nim" if result.get("_meta", {}).get("source") == "nim" else "fallback"
+    return success_response(result, source=source)
+
 
 @router.get("/{course_id}/comprehension")
-async def get_comprehension(course_id: str, _: dict = Depends(_require_admin_or_prof)):
-    return await syllabus_engine.comprehension_vs_coverage(course_id)
+async def get_comprehension(
+    course_id: str,
+    db: AsyncSession = Depends(get_db),
+    current_user: dict = Depends(RBACPolicy.require_professor_of("course_id"))
+):
+    """Retrieve syllabus comprehension-coverage gap analysis."""
+    result = await syllabus_engine.comprehension_vs_coverage(course_id, db=db)
+    source = "nim" if result.get("_meta", {}).get("source") == "nim" else "fallback"
+    return success_response(result, source=source)
+
 
 @router.get("/alerts")
-async def get_alerts(_: dict = Depends(_require_admin_or_prof)):
-    return await syllabus_engine.detect_lagging_professors()
+async def get_alerts(
+    db: AsyncSession = Depends(get_db),
+    current_user: dict = Depends(RBACPolicy.require_role("admin", "professor"))
+):
+    """Retrieve pacing warning alerts across all courses."""
+    result = await syllabus_engine.detect_lagging_professors(db=db)
+    return success_response(result, source="database")

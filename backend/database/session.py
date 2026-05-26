@@ -13,7 +13,19 @@ class DatabaseEngine:
     @classmethod
     def get_engine(cls):
         if cls._engine is None:
-            cls._engine = create_async_engine(settings.database_url, echo=settings.debug, pool_pre_ping=True)
+            db_url = settings.database_url
+            if "sqlite" in db_url:
+                cls._engine = create_async_engine(
+                    db_url,
+                    echo=settings.debug,
+                    connect_args={"check_same_thread": False}
+                )
+            else:
+                cls._engine = create_async_engine(
+                    db_url,
+                    echo=settings.debug,
+                    pool_pre_ping=True
+                )
         return cls._engine
 
     @classmethod

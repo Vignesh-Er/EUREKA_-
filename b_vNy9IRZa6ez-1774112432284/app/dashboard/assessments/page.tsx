@@ -123,7 +123,7 @@ export default function AssessmentsPage() {
               {test.status === 'pending' ? (
                 <Button 
                   className="w-full bg-primary/20 text-primary hover:bg-primary/30 group"
-                  onClick={() => setSelectedTest({ title: test.title, duration: parseInt(test.estimatedTime) || 10 })}  
+                  onClick={() => setSelectedTest({ title: test.title, duration: parseInt(test.estimatedTime ?? '10', 10) || 10 })}
                 >
                   Start Micro-Test <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                 </Button>
@@ -144,7 +144,7 @@ export default function AssessmentsPage() {
       <QuizModal 
         isOpen={!!selectedTest} 
         onClose={() => setSelectedTest(null)} 
-        title={selectedTest?.title}
+        title={selectedTest?.title ?? 'AI Assessment'}
         testDurationMinutes={selectedTest?.duration || 10}
       />
     </div>

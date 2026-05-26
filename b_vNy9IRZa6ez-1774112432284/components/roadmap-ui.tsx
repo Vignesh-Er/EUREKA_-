@@ -93,8 +93,8 @@ const CustomNode = ({ data }: any) => {
 const nodeTypes = { custom: CustomNode }
 
 export function RoadmapUI({ subject, isOpen, onClose }: { subject: string, isOpen: boolean, onClose: () => void }) {
-  const [nodes, setNodes, onNodesChange] = useNodesState([])
-  const [edges, setEdges, onEdgesChange] = useEdgesState([])
+  const [nodes, setNodes, onNodesChange] = useNodesState<Node>([])
+  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([])
   const [loading, setLoading] = useState(false)
   const [roadmapData, setRoadmapData] = useState<any>(null)
   const [selectedPanel, setSelectedPanel] = useState<'explain' | 'realworld' | null>(null)

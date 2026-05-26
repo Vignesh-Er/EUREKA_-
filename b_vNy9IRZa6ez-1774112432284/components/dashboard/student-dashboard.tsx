@@ -24,7 +24,10 @@ import {
   MapPin,
   BrainCircuit,
   AlertCircle,
-  TrendingDown
+  TrendingDown,
+  ShieldCheck,
+  Route,
+  Layers3
 } from 'lucide-react'
 import Link from 'next/link'
 
@@ -47,6 +50,38 @@ export function StudentDashboard() {
   ]
 
   const featuredContextCard = contextCards[0]
+  const intelligenceSignals = [
+    {
+      engine: 'Evaluation',
+      status: 'Risk detected',
+      summary: 'Fourier quiz readiness is trending down after two missed practice loops.',
+      action: 'Take Micro-Test',
+      href: '/dashboard/assessments',
+      color: 'text-destructive',
+      bg: 'bg-destructive/10',
+      icon: AlertCircle,
+    },
+    {
+      engine: 'Context',
+      status: 'Opportunity',
+      summary: 'PID Controllers now maps to 4 lab demos and 3 target companies.',
+      action: 'Open Context',
+      href: '/dashboard/context',
+      color: 'text-chart-1',
+      bg: 'bg-chart-1/10',
+      icon: Layers3,
+    },
+    {
+      engine: 'Journey',
+      status: 'Path updated',
+      summary: 'Cloud fundamentals moved earlier to improve placement fit by 18%.',
+      action: 'Review Roadmap',
+      href: '/dashboard/roadmap',
+      color: 'text-eureka-success',
+      bg: 'bg-eureka-success/10',
+      icon: Route,
+    },
+  ]
 
   return (
     <div className="p-6 space-y-6">
@@ -178,6 +213,52 @@ export function StudentDashboard() {
         </Card>
       </div>
 
+      <Card className="bg-card border-primary/25 overflow-hidden">
+        <CardHeader className="pb-3">
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div>
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <ShieldCheck className="h-5 w-5 text-primary" />
+                Intelligence Orchestration
+              </CardTitle>
+              <CardDescription>One prioritized view across your evaluation, context, and journey engines</CardDescription>
+            </div>
+            <Badge variant="outline" className="w-fit border-primary/30 bg-primary/10 text-primary">
+              Live academic twin
+            </Badge>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 gap-3 lg:grid-cols-3">
+            {intelligenceSignals.map((signal) => {
+              const Icon = signal.icon
+              return (
+                <Link
+                  key={signal.engine}
+                  href={signal.href}
+                  className="group rounded-lg border border-border bg-secondary/20 p-4 transition-colors hover:border-primary/40 hover:bg-secondary/35"
+                >
+                  <div className="mb-3 flex items-start justify-between gap-3">
+                    <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${signal.bg}`}>
+                      <Icon className={`h-5 w-5 ${signal.color}`} />
+                    </div>
+                    <Badge variant="secondary" className="text-[10px] uppercase tracking-wider">
+                      {signal.engine}
+                    </Badge>
+                  </div>
+                  <p className={`text-sm font-semibold ${signal.color}`}>{signal.status}</p>
+                  <p className="mt-2 min-h-12 text-sm text-muted-foreground">{signal.summary}</p>
+                  <div className="mt-4 flex items-center text-xs font-semibold text-primary">
+                    {signal.action}
+                    <ArrowRight className="ml-1 h-3 w-3 transition-transform group-hover:translate-x-1" />
+                  </div>
+                </Link>
+              )
+            })}
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Smart Action Center */}
@@ -299,7 +380,7 @@ export function StudentDashboard() {
             </div>
 
             <Button className="w-full" asChild>
-              <Link href={`/dashboard/context/${featuredContextCard.id}`}>
+              <Link href="/dashboard/context">
                 Explore Full Context
                 <ArrowRight className="w-4 h-4 ml-2" />
               </Link>
