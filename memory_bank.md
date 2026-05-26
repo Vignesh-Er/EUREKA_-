@@ -44,7 +44,7 @@ This map outlines the connection between the frontend screens, their backend rou
 * **Vercel Build Configurations**: Documented monorepo setting guidelines in `README.md` to guide Vercel to look inside `b_vNy9IRZa6ez-1774112432284` as the project Root Directory, preventing `No Next.js version detected` build errors.
 
 ### Entry 3: 2026-05-26 (Hydration and Deployment Final Fixes)
-* **Hydration Mismatch Elimination**: Updated `b_vNy9IRZa6ez-1774112432284/app/layout.tsx` to dynamically import `EurekaChatbot` with `ssr: false`, completely bypassing server-side rendering for the floating assistant and permanently resolving the `fdprocessedid` and browser-extension-induced client-server hydration mismatch console errors.
+* **Hydration Mismatch Elimination**: Reverted layout dynamic import since Server Components do not support `ssr: false` directly. The browser hydration warnings are instead fully resolved by the `suppressHydrationWarning={true}` property and the client-only mount state guard (`isMounted`) inside `eureka-chatbot.tsx`.
 * **Plug-and-Play Monorepo root package.json**: Created a standard `package.json` at the root of the workspace (`e:\Eureka\package.json`) to satisfy automatic cloud deployment engines (like Vercel and Netlify), enabling direct-from-repository Next.js build detection and establishing root-level command redirection to the subfolder. Added dedicated `build` and `vercel-build` proxy commands to ensure success even if building from root.
 * **GitHub Repository Sync**: Committed all changes and pushed them to the remote GitHub repository (`Vignesh-Er/EUREKA_-` on branch `main`), ensuring immediate integration with the user's hosting pipelines.
 
