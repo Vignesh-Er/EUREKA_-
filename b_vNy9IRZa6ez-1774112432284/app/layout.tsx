@@ -5,8 +5,7 @@ import { ThemeProvider } from '@/components/theme-provider'
 import { Toaster } from '@/components/ui/sonner'
 import { AuthProvider } from '@/lib/auth-context'
 import CosmicBackground from '@/components/CosmicBackground'
-import dynamic from 'next/dynamic'
-const EurekaChatbot = dynamic(() => import('@/components/chat/eureka-chatbot').then(mod => mod.EurekaChatbot), { ssr: false })
+import { EurekaChatbot } from '@/components/chat/eureka-chatbot'
 import './globals.css'
 
 const spaceGrotesk = Space_Grotesk({
