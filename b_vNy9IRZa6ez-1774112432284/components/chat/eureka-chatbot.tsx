@@ -37,7 +37,12 @@ const DEFAULT_CHAT_SIZE = { width: 420, height: 560 }
 const MIN_CHAT_SIZE = { width: 340, height: 420 }
 
 export function EurekaChatbot() {
+  const [isMounted, setIsMounted] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
+
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [chatSize, setChatSize] = useState(DEFAULT_CHAT_SIZE)
   const [messages, setMessages] = useState<Message[]>([INITIAL_MESSAGE])
@@ -152,6 +157,8 @@ export function EurekaChatbot() {
       handleSend()
     }
   }
+
+  if (!isMounted) return null
 
   return (
     <>

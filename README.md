@@ -161,6 +161,22 @@ Project Eureka operates as a unified educational ecosystem powered by eight inte
 
 ---
 
-## 📓 6. Dev Log & Diary
+## 🌐 6. Vercel Monorepo Deployment
+
+When deploying this project to **Vercel**, you may encounter a build failure saying `No Next.js version detected` if Vercel attempts to build from the repository root.
+
+To deploy successfully:
+1. Connect your GitHub repository to your Vercel Account.
+2. In the **Project Settings** dashboard, go to the **General** tab.
+3. Locate the **Root Directory** setting and set it to:
+   ```text
+   b_vNy9IRZa6ez-1774112432284
+   ```
+4. Save settings and trigger a redeploy! Vercel will automatically cd into the Next.js directory, build, and deploy your frontend beautifully.
+
+---
+
+## 📓 7. Dev Log & Diary
 All architectural coordinates, implemented routes, and chronological logs are recorded in our developer's log book:
 * Review logs in: **[memory_bank.md](file:///e:/Eureka/memory_bank.md)**
+

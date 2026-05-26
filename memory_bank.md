@@ -40,5 +40,8 @@ This map outlines the connection between the frontend screens, their backend rou
 * **Placement Intelligence Engine**: Connected `placement_engine.py` to persistent student digital twin contexts. Implemented real-time corporate matches and gap checklists via NIM. Added dynamic endpoints in `placement.py` and connected the Next.js frontend page, incorporating a premium AI Skill-Gap Tutor sandbox.
 * **Root Documentation**: Created a unified, high-fidelity monorepo `README.md` at the root directory outlining the platform's inspiration, 8-engine architecture, and step-by-step startup instructions, and pushed all updates to GitHub.
 * **Local Launch**: Started the FastAPI backend server on `http://localhost:8000` (uvicorn process) and the Next.js development server on `http://localhost:3000` concurrently as background tasks.
+* **Hydration Mismatch Safeguards**: Added `suppressHydrationWarning={true}` on the core `Comp` (button) element inside `components/ui/button.tsx`, and wrapped `EurekaChatbot` (`components/chat/eureka-chatbot.tsx`) in a client-side mount state guard (`isMounted`) to defer rendering until mounted. This completely resolves the React hydration mismatch warnings caused by browser auto-fill attributes.
+* **Vercel Build Configurations**: Documented monorepo setting guidelines in `README.md` to guide Vercel to look inside `b_vNy9IRZa6ez-1774112432284` as the project Root Directory, preventing `No Next.js version detected` build errors.
+
 
 
