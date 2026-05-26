@@ -296,24 +296,7 @@ export default function LandingPage() {
 
       </main>
 
-      <style jsx global>{`
-        @keyframes gradient-bg {
-          0% { background-position: 0% 50%; }
-          50% { background-position: 100% 50%; }
-          100% { background-position: 0% 50%; }
-        }
-        .animate-gradient-bg {
-          animation: gradient-bg 6s ease infinite;
-        }
 
-        .reveal-in {
-          opacity: 1 !important;
-          transform: translateY(0) !important;
-        }
-
-        /* Prevent the CosmicBackground z-index 0 from eating clicks by setting pointer-events none in its original file, 
-           or ensuring the main content is higher */
-      `}</style>
     </div>
   )
 }
