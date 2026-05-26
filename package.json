@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "description": "Project Eureka - AI Academic & Career Intelligence Platform (Monorepo Root)",
+  "workspaces": [
+    "b_vNy9IRZa6ez-1774112432284"
+  ],
   "scripts": {
     "build": "npm --prefix b_vNy9IRZa6ez-1774112432284 run build",
     "vercel-build": "npm --prefix b_vNy9IRZa6ez-1774112432284 ci && npm --prefix b_vNy9IRZa6ez-1774112432284 run build",
