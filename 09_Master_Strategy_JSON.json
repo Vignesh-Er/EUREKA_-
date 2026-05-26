@@ -1,0 +1,928 @@
+{
+  "strategy": {
+    "project": "Project Eureka",
+    "version": "4.0",
+    "generated_by": "ARCHITECT — Claude Opus 4.6",
+    "generated_at": "2026-03-10T00:00:00Z",
+    "changelog": [
+      {"version": "1.0", "date": "2026-03-08", "summary": "Initial 7-phase strategy with all engine prompts and task assignments"},
+      {"version": "2.0", "date": "2026-03-09", "summary": "Added operational deployment details, beginner-friendly build guidance"},
+      {"version": "3.0", "date": "2026-03-09", "summary": "Comprehensive frontend/UI/UX overhaul — design system, Phase 6 (8 tasks), Phase 7 (5 tasks), web-app-first alignment"},
+      {"version": "4.0", "date": "2026-03-10", "summary": "Strict validation fixes — PII removal (student_name→student_display_token), model version corrections, P1-T4/P7-T5 scope clarification, student_profile_vector→student_profile_summary, gap-feedback triggers, error state UX, prompt versioning, env var master reference"}
+    ],
+    "phases": [
+      {
+        "phase_number": 1,
+        "phase_name": "Foundation & Core Infrastructure",
+        "phase_goal": "Establish the technical backbone — database schemas, authentication, API gateway, and base deployment pipeline.",
+        "tasks": [
+          {
+            "task_id": "P1-T1",
+            "task_name": "Database Schema Design",
+            "task_description": "Design PostgreSQL schemas for students, professors, admins, courses, labs, specializations, assessments, and feedback. Include Qdrant vector collection schemas for RAG embeddings.",
+            "assigned_model": "GPT-5.1 Codex Max",
+            "assignment_reason": "Complex systems architecture code requiring full-stack DB expertise with production-grade indexing and migration strategy.",
+            "prompt": {
+              "role": "You are a Senior Database Architect specializing in educational SaaS platforms with expertise in PostgreSQL schema design, vector database integration (Qdrant), and high-throughput academic data systems.",
+              "objective": "Design the complete database schema for Project Eureka — a global AI-powered educational platform serving students, professors, and administrators across 7 integrated AI engines.",
+              "context": "Project Eureka requires PostgreSQL for structured data (users, courses, assessments, feedback, schedules) and Qdrant for vector embeddings (student interest profiles, topic similarity, content retrieval). The schema must support 7 AI engines: Discovery, Curriculum Context, Learning Journey, Evaluation, Lecture Companion, Admin Assistant, and Translation.",
+              "input_data": "Entity list: students (profiles, behavioral signals, performance history), professors (profiles, courses, materials), administrators, courses (catalog, prerequisites, credits), labs (inventory, experiments), specializations, assessments (questions, scores, gap analysis), feedback (anonymous, categorized), hardware proposals, lecture materials, context cards, roadmaps, translations. Vector collections: student_interest_embeddings, topic_embeddings, content_embeddings.",
+              "task": "Step 1: Design normalized PostgreSQL tables for all entities with proper foreign keys, indexes, and constraints. Step 2: Design Qdrant vector collections with appropriate dimensions and metadata payload schemas. Step 3: Create migration scripts (Alembic format). Step 4: Add performance indexes for high-frequency queries (student lookup, assessment history, feedback aggregation). Step 5: Document all schema decisions.",
+              "constraints": "Must support 50,000+ concurrent students. All student PII must be encrypted at rest. Anonymous feedback must use irreversible hashing. Follow PostgreSQL best practices for indexing. All timestamps in UTC ISO 8601. Include soft-delete patterns. GDPR-compliant data retention policies.",
+              "output_format": "Complete SQL DDL statements for all tables, Qdrant collection creation JSON, Alembic migration script, and an ER diagram in Mermaid syntax.",
+              "example": "INPUT: {entity: 'student_performance', fields: ['student_id', 'topic', 'score', 'timestamp', 'difficulty']} → OUTPUT: CREATE TABLE student_performance (id BIGSERIAL PRIMARY KEY, student_id UUID NOT NULL REFERENCES students(id), topic VARCHAR(255) NOT NULL, score DECIMAL(5,2) CHECK(score >= 0 AND score <= 100), assessed_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), difficulty VARCHAR(20) CHECK(difficulty IN ('foundational','intermediate','advanced')), weak_subtopics JSONB, strong_subtopics JSONB); CREATE INDEX idx_perf_student_topic ON student_performance(student_id, topic); CREATE INDEX idx_perf_date ON student_performance(assessed_at DESC);"
+            },
+            "quality_scores": {
+              "role": 8,
+              "objective": 9,
+              "context": 9,
+              "input_data": 9,
+              "task": 9,
+              "constraints": 9,
+              "output_format": 8,
+              "example": 8
+            },
+            "revisions_needed": []
+          },
+          {
+            "task_id": "P1-T2",
+            "task_name": "FastAPI Backend Scaffold",
+            "task_description": "Generate the complete FastAPI project structure with routers, middleware, dependency injection, and Pydantic models for all 7 engines.",
+            "assigned_model": "GPT-5.2 Codex",
+            "assignment_reason": "Advanced code synthesis with strong FastAPI integration patterns and structured decision-making for backend scaffolding.",
+            "prompt": {
+              "role": "You are a Senior Python Backend Engineer specializing in FastAPI microservice architecture for high-traffic SaaS platforms with AI model integration.",
+              "objective": "Generate the complete FastAPI project scaffold for Project Eureka with routers, middleware, Pydantic models, and dependency injection for 7 AI engine endpoints.",
+              "context": "Project Eureka is an educational SaaS platform with 7 AI engines, each requiring dedicated API endpoints. The backend must integrate with PostgreSQL, Qdrant, Groq API, Google AI Studio API, NLLB-200 self-hosted, and MinIO storage.",
+              "input_data": "7 engine endpoints: /api/v1/discovery, /api/v1/context, /api/v1/journey, /api/v1/evaluation, /api/v1/companion, /api/v1/admin, /api/v1/translation. Middleware: JWT auth, CORS, rate limiting, request logging. Models: Pydantic schemas matching each engine's input/output JSON.",
+              "task": "Step 1: Create project directory structure (app/, routers/, models/, services/, middleware/, config/). Step 2: Implement main.py with FastAPI app, middleware stack, and router registration. Step 3: Create Pydantic models for each engine's input/output schemas. Step 4: Implement dependency injection for DB sessions, AI clients, and storage. Step 5: Add health check, versioned API routing, and OpenAPI documentation customization.",
+              "constraints": "Follow FastAPI best practices. Use async/await throughout. Implement proper error handling with custom exception handlers. Rate limit AI endpoints (10 req/min per student). CORS configured for Next.js frontend origins. All responses use standard envelope: {status, data, error, timestamp}.",
+              "output_format": "Complete Python source files for each module, requirements.txt, Dockerfile, and docker-compose.yml for local development.",
+              "example": "INPUT: {engine: 'evaluation', method: 'POST'} \u2192 OUTPUT: @router.post('/generate', response_model=AssessmentResponse) async def generate_assessment(request: AssessmentRequest, db: AsyncSession = Depends(get_db), ai_client: GroqClient = Depends(get_groq_client)) -> AssessmentResponse: ..."
+            },
+            "quality_scores": {
+              "role": 8,
+              "objective": 9,
+              "context": 8,
+              "input_data": 9,
+              "task": 9,
+              "constraints": 9,
+              "output_format": 8,
+              "example": 8
+            },
+            "revisions_needed": []
+          },
+          {
+            "task_id": "P1-T3",
+            "task_name": "Authentication & RBAC System",
+            "task_description": "Implement JWT-based auth with role-based access control for Student, Professor, and Administrator roles.",
+            "assigned_model": "GPT-5.1 Codex",
+            "assignment_reason": "Production code expertise for security-critical full-stack authentication flows with OAuth2 integration.",
+            "prompt": {
+              "role": "You are a Security Engineer specializing in authentication systems for educational platforms that handle sensitive student data and must comply with GDPR and FERPA.",
+              "objective": "Implement a complete JWT-based authentication and RBAC system for Project Eureka supporting Student, Professor, and Administrator roles with university SSO integration.",
+              "context": "Project Eureka serves three user types with different access levels. Students access learning content and assessments. Professors upload materials and view analytics. Administrators manage schedules, feedback, and procurement. The system must support university OAuth2 SSO providers.",
+              "input_data": "Roles: Student (access: discovery, context, journey, evaluation, companion, translation), Professor (access: companion upload, evaluation analytics, admin feedback view), Administrator (access: admin all functions, analytics dashboards). Auth flow: JWT access + refresh tokens, OAuth2 SSO callback.",
+              "task": "Step 1: Implement JWT token generation with role claims and expiration. Step 2: Create RBAC middleware that validates tokens and checks role permissions per endpoint. Step 3: Implement OAuth2 callback handler for university SSO providers. Step 4: Add password hashing (bcrypt), refresh token rotation, and session management. Step 5: Implement rate limiting per role (students: standard, professors: elevated, admin: unrestricted).",
+              "constraints": "Tokens expire in 15 minutes (access) and 7 days (refresh). Passwords hashed with bcrypt cost factor 12. All auth failures logged with IP and timestamp. Never store raw passwords. Implement CSRF protection for web sessions. Support multi-factor authentication for administrators.",
+              "output_format": "Complete Python auth module with middleware, token utilities, OAuth2 handler, and Pydantic auth schemas. Include unit tests for all auth flows.",
+              "example": "INPUT: {user: 'student', endpoint: '/api/v1/admin/substitute'} → OUTPUT: HTTP 403 {error: 'Insufficient permissions', required_role: 'administrator', user_role: 'student'}"
+            },
+            "quality_scores": {
+              "role": 9,
+              "objective": 9,
+              "context": 8,
+              "input_data": 8,
+              "task": 9,
+              "constraints": 9,
+              "output_format": 8,
+              "example": 9
+            },
+            "revisions_needed": []
+          },
+          {
+            "task_id": "P1-T4",
+            "task_name": "Dev Infrastructure Scaffold",
+            "task_description": "Create Docker Compose for local development and basic GitHub Actions CI with linting/type-check gates. Scope: local dev only — no K8s, no production images (those come in P7-T5).",
+            "assigned_model": "GPT-5.1 Codex Mini",
+            "assignment_reason": "Utility scripts and boilerplate infrastructure code — well within lightweight operational scope.",
+            "prompt": {
+              "role": "You are a DevOps Engineer specializing in containerized Python application deployments with Docker Compose for local development environments.",
+              "objective": "Create the local development infrastructure for Project Eureka: Docker Compose with all services, basic GitHub Actions CI for linting/type-checking, and MinIO/R2 storage configuration. Production Docker images, Kubernetes manifests, and full CI/CD pipelines will be built separately in Phase 7 (P7-T5).",
+              "context": "Project Eureka is a FastAPI + Next.js web app platform with PostgreSQL, Qdrant, and MinIO dependencies. This task focuses exclusively on local dev parity and basic CI. The web app is the sole delivery surface — no separate mobile app is planned.",
+              "input_data": "Services: fastapi-backend, next-frontend, postgresql, qdrant, minio, redis (caching). Environment: local (docker-compose only). CI stages: lint, type-check.",
+              "task": "Step 1: Create docker-compose.yml with all services, health checks, and volume mounts for hot-reload. Step 2: Create lightweight dev Dockerfiles for backend and frontend (optimized for rebuild speed, not size). Step 3: Create basic GitHub Actions workflow for lint + type-check on PR. Step 4: Add .env.example with all required environment variables. Step 5: Add MinIO/R2 bucket initialization script.",
+              "constraints": "Docker Compose must support hot-reload for both FastAPI and Next.js. Health checks required for all services. .env.example must list every variable with placeholder values and comments. Do NOT create Kubernetes manifests or production Docker images — those belong in P7-T5.",
+              "output_format": "Complete docker-compose.yml, Dockerfile.backend.dev, Dockerfile.frontend.dev, .env.example, .github/workflows/lint.yml, scripts/init-minio.sh.",
+              "example": "INPUT: {service: 'fastapi-backend'} → OUTPUT: Dev Dockerfile with python:3.12-slim, pip install with --no-cache-dir, volume mount point for /app, uvicorn with --reload flag."
+            },
+            "quality_scores": {
+              "role": 8,
+              "objective": 8,
+              "context": 8,
+              "input_data": 8,
+              "task": 8,
+              "constraints": 9,
+              "output_format": 8,
+              "example": 8
+            },
+            "revisions_needed": []
+          }
+        ]
+      },
+      {
+        "phase_number": 2,
+        "phase_name": "Discovery & Profiling Engines",
+        "phase_goal": "Build Engine 1 (Discovery) and Engine 3 (Personalized Learning Journey) — the student onboarding and roadmap generation system.",
+        "tasks": [
+          {
+            "task_id": "P2-T1",
+            "task_name": "Discovery Engine AI Agent Prompt",
+            "task_description": "Craft the production system prompt for the Discovery Engine that profiles students during Week 1 lab exploration.",
+            "assigned_model": "Claude Opus 4.6",
+            "assignment_reason": "Extended thinking, nuanced human intent interpretation, and pedagogical reasoning for complex student profiling.",
+            "prompt": {
+              "role": "See 01_Engine_Discovery.md — DISCOVERY agent with educational psychologist + career counselor + domain expert persona.",
+              "objective": "Analyze student Week 1 behavioral data and generate Personalized Specialization Recommendation with top 3 matches, evidence, and career pathways.",
+              "context": "Full Eureka platform context with Discovery Engine as entry point, behavioral signal processing, and downstream handoff to Engine 3.",
+              "input_data": "Student behavioral logs (time, depth, returns, interactions), interest survey (Likert + free text), diagnostic quizzes (accuracy, speed, subtopics), prior academics.",
+              "task": "7-step process: Signal extraction (weighted formula) → Survey alignment → Aptitude assessment → Cross-factor synthesis (40/35/25 weights) → Specialization matching → Uncertainty assessment → Output assembly.",
+              "constraints": "Educational safety (17+), anti-bias, no deterministic labels, factual accuracy, privacy, transparency mandate, downstream JSON compatibility.",
+              "output_format": "Complete JSON with exploration_summary, domain_engagement_scores, interest_alignment_analysis, top_recommendations (3), confidence_assessment, handoff_to_engine_3.",
+              "example": "Full worked example: Ananya, ECE student, 4 stations visited, Embedded Systems ranked #1 (89/100), IoT #2 (84/100), Signal Processing #3 (62/100). See 01_Engine_Discovery.md for complete example."
+            },
+            "quality_scores": {
+              "role": 9,
+              "objective": 9,
+              "context": 9,
+              "input_data": 10,
+              "task": 9,
+              "constraints": 9,
+              "output_format": 10,
+              "example": 10
+            },
+            "revisions_needed": []
+          },
+          {
+            "task_id": "P2-T2",
+            "task_name": "Student Interest Tracking Pipeline",
+            "task_description": "Build the event ingestion pipeline for capturing behavioral signals from lab exploration UI.",
+            "assigned_model": "GPT-5.2 Codex",
+            "assignment_reason": "Backend logic with structured decision-making for real-time event processing and FastAPI integration.",
+            "prompt": {
+              "role": "You are a Backend Data Engineer specializing in real-time event ingestion pipelines for educational analytics platforms using FastAPI and PostgreSQL.",
+              "objective": "Build the event capture and storage pipeline that ingests student behavioral signals from Eureka's Week 1 lab exploration interface and stores them for Engine 1 (Discovery) consumption.",
+              "context": "During Week 1, students explore lab stations. Every click, experiment run, question asked, and resource downloaded must be captured as a timestamped event. Events are stored in PostgreSQL and vectorized in Qdrant for similarity matching.",
+              "input_data": "Event types: click, experiment_run, question_asked, resource_downloaded, station_enter, station_exit, quiz_answer. Event payload: {student_id, station_id, event_type, timestamp, detail, duration_ms}. Expected volume: ~500 events per student per day, ~5000 students per university.",
+              "task": "Step 1: Design event schema (PostgreSQL partitioned by date). Step 2: Implement FastAPI endpoint for event ingestion (batched, async). Step 3: Create event aggregation service (per-student, per-station summaries). Step 4: Implement Qdrant embedding pipeline (student interest vectors). Step 5: Add data validation, deduplication, and error handling.",
+              "constraints": "Events must be ingested within 100ms (p99 latency). Batch size max 100 events per request. Deduplication by (student_id, event_type, timestamp) within 1-second window. All timestamps UTC. Retention: raw events 1 year, aggregated summaries indefinitely.",
+              "output_format": "Complete Python module with FastAPI router, Pydantic event models, SQLAlchemy models, aggregation service, and Qdrant embedding utility.",
+              "example": "INPUT: {student_id: 'STU-001', station_id: 'LAB-EMB-01', event_type: 'experiment_run', detail: 'LED blink on STM32', timestamp: '2026-08-12T10:15:00Z'} → Stored in student_events table, aggregated into station_engagement_summary, vectorized for Qdrant."
+            },
+            "quality_scores": {
+              "role": 8,
+              "objective": 9,
+              "context": 9,
+              "input_data": 9,
+              "task": 9,
+              "constraints": 9,
+              "output_format": 8,
+              "example": 8
+            },
+            "revisions_needed": []
+          },
+          {
+            "task_id": "P2-T3",
+            "task_name": "Personalized Learning Journey Prompt",
+            "task_description": "Craft the production system prompt for the Learning Journey Engine that generates academic roadmaps.",
+            "assigned_model": "Claude Opus 4.6",
+            "assignment_reason": "Long-horizon planning with structured output — requires deep reasoning across course catalogs, industry data, and student profiles.",
+            "prompt": {
+              "role": "See 03_Engine_Learning_Journey.md — PATHFINDER agent with academic advisor + career strategist + curriculum architect persona.",
+              "objective": "Generate complete semester-by-semester academic roadmap balancing university requirements, industry skill gaps, research opportunities, and student interests.",
+              "context": "Full Eureka platform context with Engine 1 handoff, Engine 4 feedback loop, course catalog integration, and industry demand signals.",
+              "input_data": "Student profile (from Engine 1), university course catalog (with prerequisites, credits, relevance scores), degree requirements, industry skill demand data, calendar context (internship windows).",
+              "task": "9-step process: Degree mapping → Specialization alignment → Industry gap analysis → Semester construction → Milestone insertion → Weakness remediation → Workload balancing → Narrative assembly → Confidence notes.",
+              "constraints": "Prerequisite integrity, credit limits, no course invention, workload realism, student agency (alternatives provided), factual accuracy, downstream JSON compatibility.",
+              "output_format": "Complete JSON with semester_plans (courses, labs, self-study, milestones, workload), industry_gap_coverage, career_pathway_alignment, weakness_remediation_plan, handoff_to_engine_4.",
+              "example": "Full Semester 3 excerpt for Ananya: ECE301 + ECE302 + ECE303 with Git self-study, portfolio milestone, and internship prep. See 03_Engine_Learning_Journey.md."
+            },
+            "quality_scores": {
+              "role": 9,
+              "objective": 9,
+              "context": 9,
+              "input_data": 10,
+              "task": 9,
+              "constraints": 9,
+              "output_format": 10,
+              "example": 9
+            },
+            "revisions_needed": []
+          },
+          {
+            "task_id": "P2-T4",
+            "task_name": "Roadmap Generation API Endpoint",
+            "task_description": "Implement the FastAPI endpoint that orchestrates Claude Opus 4.6 calls for roadmap generation.",
+            "assigned_model": "GPT-5.1 Codex",
+            "assignment_reason": "Production code for API orchestration with robust error handling and model integration.",
+            "prompt": {
+              "role": "You are a Senior Backend Engineer specializing in AI model orchestration APIs with retry logic, caching, and structured response parsing for production educational platforms.",
+              "objective": "Implement the FastAPI endpoint that sends student profile data to Groq Llama 3.3 70B, receives the academic roadmap response, validates it, caches it, and returns it to the frontend.",
+              "context": "The roadmap generation endpoint /api/v1/journey/generate is the most computationally expensive endpoint in Eureka. Each call invokes llama-3.3-70b-versatile via Groq API, which typically responds in 2-5 seconds. Results must be cached and validated before delivery.",
+              "input_data": "Request: StudentRoadmapRequest Pydantic model (student_id, specialization, course_catalog_id). Response: RoadmapResponse Pydantic model (matching Engine 3 output schema). External: Groq API client, PostgreSQL session, Redis cache.",
+              "task": "Step 1: Implement request validation and deduplication (prevent duplicate generation). Step 2: Check Redis cache for existing roadmap. Step 3: If cache miss, construct Groq Llama 3.3 70B prompt with student data + course catalog. Step 4: Send to Groq API with retry logic (3 attempts, exponential backoff). Step 5: Parse and validate JSON response against Pydantic schema. Step 6: Store in PostgreSQL and cache in Redis (TTL: 7 days). Step 7: Return to client with streaming progress updates.",
+              "constraints": "Request timeout: 120 seconds. Retry on 429 (rate limit) and 500 errors only. Validate all JSON fields before storage. Cache key: student_id + specialization + catalog_version. Log all API calls with latency metrics. Never expose raw AI errors to frontend.",
+              "output_format": "Complete FastAPI router file with endpoint, Pydantic models, service layer, caching logic, and retry utility.",
+              "example": "POST /api/v1/journey/generate {student_id: 'STU-001', specialization: 'Embedded Systems'} → 202 Accepted → SSE stream with progress → 200 OK {roadmap: {...}} or 500 {error: 'Generation failed after 3 attempts'}"
+            },
+            "quality_scores": {
+              "role": 8,
+              "objective": 9,
+              "context": 9,
+              "input_data": 9,
+              "task": 9,
+              "constraints": 9,
+              "output_format": 8,
+              "example": 9
+            },
+            "revisions_needed": []
+          }
+        ]
+      },
+      {
+        "phase_number": 3,
+        "phase_name": "Curriculum Intelligence & Context Engine",
+        "phase_goal": "Build Engine 2 (Curriculum Context Engine) — the system that eliminates the Context Vacuum.",
+        "tasks": [
+          {
+            "task_id": "P3-T1",
+            "task_name": "Curriculum Context Engine Prompt",
+            "task_description": "Craft the production system prompt that generates Context Cards linking syllabus topics to industry.",
+            "assigned_model": "Claude Opus 4.6",
+            "assignment_reason": "Deep domain knowledge and cross-domain reasoning required to connect academic concepts to specific deployed industrial systems.",
+            "prompt": {
+              "role": "See 02_Engine_Curriculum_Context.md — CONTEXT agent with domain expert persona across all engineering fields.",
+              "objective": "Generate complete Context Cards transforming abstract academic concepts into industry-anchored reality with real deployments, lab connections, and worked examples.",
+              "context": "Full Eureka platform context with Context Vacuum elimination mandate, downstream consumption by Engines 3, 5, and 7.",
+              "input_data": "Topic name, course name, academic level, university lab inventory, student specialization.",
+              "task": "8-step process: Core principle ID → Industry deployment tracing (3 specific) → Campus lab connection → Worked numerical example (real params) → Companies hiring (3) → Connected topics → Confidence verification → Assembly (400-600 words).",
+              "constraints": "Specificity mandate (no generic examples), numerical accuracy (self-verify), lab integrity (only from provided list), job title accuracy, readability (first-year student), 400-600 word limit.",
+              "output_format": "Complete JSON with why_it_exists, industry_deployments[3], campus_lab_connection, worked_example, companies_hiring[3], connected_topics, confidence_flags.",
+              "example": "Full Fourier Transform Context Card with LTE OFDM, JPEG compression, RTL-SDR examples, Signal Processing Lab connection, and 2343.75 Hz FFT bin calculation. See 02_Engine_Curriculum_Context.md."
+            },
+            "quality_scores": {
+              "role": 9,
+              "objective": 9,
+              "context": 9,
+              "input_data": 9,
+              "task": 10,
+              "constraints": 10,
+              "output_format": 10,
+              "example": 10
+            },
+            "revisions_needed": []
+          },
+          {
+            "task_id": "P3-T2",
+            "task_name": "Syllabus Ingestion & Topic Extraction",
+            "task_description": "Build the RAG pipeline that ingests university syllabi and extracts individual topics with embeddings.",
+            "assigned_model": "Gemini 3.1 Pro",
+            "assignment_reason": "Long-context data analysis and document processing — excels at parsing large academic documents and extracting structured data.",
+            "prompt": {
+              "role": "You are a Document Intelligence Engineer specializing in academic document processing, RAG pipeline design, and vector database integration for educational platforms.",
+              "objective": "Build the syllabus ingestion pipeline that processes university syllabi (PDF/DOCX), extracts individual topics with metadata, and stores embeddings in Qdrant for semantic retrieval.",
+              "context": "Project Eureka needs to process university syllabi to populate Engine 2's topic database. Syllabi come in various formats (PDF, DOCX, structured and unstructured). Each extracted topic becomes an input for Context Card generation.",
+              "input_data": "Raw syllabus files (PDF/DOCX). Expected structure varies: some have numbered topic lists, others have paragraph descriptions, some have week-by-week schedules. Must handle all formats.",
+              "task": "Step 1: Implement document parser supporting PDF (PyMuPDF) and DOCX (python-docx). Step 2: Extract topics using NLP (section headers, numbered items, week headings). Step 3: For each topic, extract: topic_name, parent_course, academic_level, prerequisites (if mentioned), estimated_hours. Step 4: Generate embeddings (sentence-transformers) and store in Qdrant. Step 5: Implement semantic search endpoint for topic similarity queries.",
+              "constraints": "Handle scanned PDFs with OCR fallback (Tesseract). Deduplicate topics across multiple syllabi for the same course. Embeddings must use the same model consistently (all-MiniLM-L6-v2 or equivalent). Process a 50-page syllabus within 30 seconds.",
+              "output_format": "Complete Python pipeline with document parser, topic extractor, embedding generator, Qdrant client, and FastAPI search endpoint.",
+              "example": "INPUT: ECE301_Syllabus.pdf containing 'Week 3: Interrupt Service Routines — NVIC, priority, pending flags' → OUTPUT: {topic_name: 'Interrupt Service Routines', subtopics: ['NVIC', 'interrupt priority', 'pending flags'], course: 'ECE301', week: 3, embedding: [0.12, -0.34, ...], qdrant_id: 'topic-ece301-isr'}"
+            },
+            "quality_scores": {
+              "role": 8,
+              "objective": 9,
+              "context": 8,
+              "input_data": 8,
+              "task": 9,
+              "constraints": 8,
+              "output_format": 8,
+              "example": 9
+            },
+            "revisions_needed": []
+          },
+          {
+            "task_id": "P3-T3",
+            "task_name": "Context Card Storage & Retrieval API",
+            "task_description": "Implement CRUD endpoints for Context Cards with vector similarity search.",
+            "assigned_model": "GPT-5.1 Codex",
+            "assignment_reason": "Production full-stack development for API endpoints with vector DB integration.",
+            "prompt": {
+              "role": "You are a Full-Stack API Engineer specializing in hybrid PostgreSQL + vector DB (Qdrant) applications with semantic search capabilities.",
+              "objective": "Implement the complete CRUD API for Eureka Context Cards with PostgreSQL storage, Qdrant-based semantic similarity search, and caching for high-traffic access patterns.",
+              "context": "Context Cards are generated by Engine 2 and served to students, Engine 5, and Engine 7. They are the most frequently accessed content type in Eureka — every student views multiple Context Cards daily.",
+              "input_data": "Context Card JSON (matching Engine 2 output schema). Search queries: topic name (exact), semantic similarity (embedding), course filter, specialization filter.",
+              "task": "Step 1: Create SQLAlchemy model for context_cards table. Step 2: Implement CRUD endpoints (create, read, update, delete, list). Step 3: Implement semantic search using Qdrant similarity. Step 4: Add Redis caching for top-50 most accessed cards. Step 5: Implement bulk generation trigger (course syllabus → batch Engine 2 calls).",
+              "constraints": "Search latency < 200ms (p95). Cache invalidation on update. Pagination for list endpoints (default 20, max 100). Soft delete with audit trail. Admin-only write access, student read access.",
+              "output_format": "Complete FastAPI router, SQLAlchemy models, Qdrant search service, Redis caching layer, and Pydantic request/response schemas.",
+              "example": "GET /api/v1/context/search?q=fourier+transform&specialization=embedded → {results: [{topic: 'Fourier Transform', relevance: 0.95, context_card_id: 'CC-FT-001'}, ...], total: 3}"
+            },
+            "quality_scores": {
+              "role": 8,
+              "objective": 9,
+              "context": 8,
+              "input_data": 8,
+              "task": 9,
+              "constraints": 9,
+              "output_format": 8,
+              "example": 9
+            },
+            "revisions_needed": []
+          },
+          {
+            "task_id": "P3-T4",
+            "task_name": "Lab Inventory Database & Matching",
+            "task_description": "Build the university lab inventory system and fuzzy matching between topics and lab experiments.",
+            "assigned_model": "Claude Sonnet 4.6",
+            "assignment_reason": "Balanced structured output with accurate matching logic — ideal for classification and mapping tasks.",
+            "prompt": {
+              "role": "You are an Educational Technology Specialist designing lab-curriculum alignment systems that match academic topics to hands-on laboratory experiments.",
+              "objective": "Build the lab inventory database and topic-to-experiment matching system that connects every Eureka syllabus topic to the most relevant available campus lab experiment.",
+              "context": "Engine 2 needs to connect topics to labs. Each university has different lab inventories. The matching system must handle fuzzy matching (a topic like 'Interrupt Handling' should match a lab experiment titled 'External Interrupt Programming on STM32').",
+              "input_data": "Lab inventory: {lab_name, experiments: [{name, description, equipment_used, topics_covered, difficulty}]}. Topic: {name, subtopics, domain}.",
+              "task": "Step 1: Design lab inventory schema (PostgreSQL). Step 2: Implement lab data import (CSV/JSON). Step 3: Build embedding-based matching (topic embedding vs experiment embedding). Step 4: Implement fallback matching (keyword overlap + TF-IDF). Step 5: Return ranked matches with confidence scores and gap notes when no match exists.",
+              "constraints": "Never invent experiments not in the database. Confidence threshold: only return matches above 0.65 similarity. Below threshold: return closest match with gap explanation. Support multi-university inventories (university_id scoping).",
+              "output_format": "Complete Python service with database model, import utility, matching engine, and FastAPI endpoint returning {lab_name, experiment, confidence, gap_note}.",
+              "example": "INPUT: {topic: 'Interrupt Service Routines', university_id: 'UNI-KLE-BLR'} → OUTPUT: {lab_name: 'Microcontroller Lab', experiment: 'External Interrupt Programming on STM32 Nucleo', confidence: 0.89, gap_note: null}"
+            },
+            "quality_scores": {
+              "role": 8,
+              "objective": 9,
+              "context": 8,
+              "input_data": 8,
+              "task": 9,
+              "constraints": 9,
+              "output_format": 8,
+              "example": 9
+            },
+            "revisions_needed": []
+          }
+        ]
+      },
+      {
+        "phase_number": 4,
+        "phase_name": "Assessment & Lecture Companion",
+        "phase_goal": "Build Engine 4 (Continuous Understanding Evaluation) and Engine 5 (AI Lecture Companion) — the daily learning loop engines.",
+        "tasks": [
+          {
+            "task_id": "P4-T1",
+            "task_name": "Continuous Evaluation Engine Prompt",
+            "task_description": "Craft the production system prompt for adaptive micro-assessment generation.",
+            "assigned_model": "Claude Sonnet 4.6",
+            "assignment_reason": "Fast, accurate structured output — optimal for high-volume per-student evaluation with calibrated question generation.",
+            "prompt": {
+              "role": "See 04_Engine_Evaluation.md — EVALUATOR agent with psychometrician + assessment designer + learning science expert persona.",
+              "objective": "Generate calibrated micro-assessment packages with questions that test conceptual understanding (not memorization), complete rubrics, and targeted remediation.",
+              "context": "Full Eureka context with Delayed Feedback and Syntax Machine Problem elimination, upstream topic lists from Engine 3, downstream gap analysis to Engine 3.",
+              "input_data": "Lecture topic, student performance history (scores, trends, consecutive high/low), difficulty level, question type preferences, time limits.",
+              "task": "6-step process: Difficulty calibration (algorithm-based) → Question generation (anti-memorization, Bloom's 3-6) → Answer key + rubrics → Remediation mapping → Gap analysis framework → Output assembly.",
+              "constraints": "Anti-memorization mandate, non-ambiguity, language accessibility, numerical accuracy, no question repetition, scoring fairness with partial credit.",
+              "output_format": "Complete JSON with difficulty_calibration, questions[] (type, text, answer, rubric, remediation), gap_analysis_mapping, handoff_to_engine_3.",
+              "example": "Full ISR assessment: 4 questions (scenario, debugging, design decision, calculation) for Ananya with real STM32 scenarios. See 04_Engine_Evaluation.md."
+            },
+            "quality_scores": {
+              "role": 9,
+              "objective": 9,
+              "context": 9,
+              "input_data": 9,
+              "task": 9,
+              "constraints": 10,
+              "output_format": 10,
+              "example": 10
+            },
+            "revisions_needed": []
+          },
+          {
+            "task_id": "P4-T2",
+            "task_name": "AI Lecture Companion Prompt",
+            "task_description": "Craft the production system prompt for multimodal lecture processing and companion document generation.",
+            "assigned_model": "Gemini 3.1 Pro",
+            "assignment_reason": "Native multimodal processing (PDF + slides + audio + text) with 1M context window for full lecture history.",
+            "prompt": {
+              "role": "See 05_Engine_Lecture_Companion.md — COMPANION agent with academic content architect + educational designer persona, multimodal expertise.",
+              "objective": "Transform professor-uploaded lecture materials into structured Lecture Companion Documents with summaries, real-world applications, lab connections, and catch-up packages.",
+              "context": "Full Eureka context with multimodal input handling (PDF/PPTX/audio/images/text), Engine 2 Context Card integration, downstream handoffs to Engines 4 and 7.",
+              "input_data": "Uploaded materials (multi-format), related Context Cards, syllabus context, professor preferences (formality, features).",
+              "task": "8-step process: Multimodal input processing → Key concept extraction → Simplified summary (500-800 words) → Real-world application mapping → Lab connection → Catch-up package (800-1200 words) → Related topic linking → Output assembly.",
+              "constraints": "Technical accuracy, multimodal fidelity (audio precedence for explanations), professor respect, no content invention, translation readiness, format independence.",
+              "output_format": "Complete JSON with key_concepts, lecture_summary, real_world_applications, lab_connections, catch_up_package, related_topics, handoff_to_engine_7, handoff_to_engine_4.",
+              "example": "Full ISR Lecture Companion with AURIX/Tesla/drone applications, Microcontroller Lab connection, and catch-up package with worked latency example. See 05_Engine_Lecture_Companion.md."
+            },
+            "quality_scores": {
+              "role": 9,
+              "objective": 9,
+              "context": 9,
+              "input_data": 9,
+              "task": 9,
+              "constraints": 10,
+              "output_format": 10,
+              "example": 10
+            },
+            "revisions_needed": []
+          },
+          {
+            "task_id": "P4-T3",
+            "task_name": "Lecture Upload & Processing Pipeline",
+            "task_description": "Build the file upload system with format detection and extraction from slides/PDFs/audio.",
+            "assigned_model": "GPT-5.2 Codex",
+            "assignment_reason": "Backend pipeline logic with multi-format file handling and FastAPI integration.",
+            "prompt": {
+              "role": "You are a Backend File Processing Engineer specializing in multimodal content pipelines for educational platforms, with expertise in PDF extraction, audio transcription, and cloud storage integration.",
+              "objective": "Build the lecture material upload and pre-processing pipeline that accepts multi-format files, extracts content, and prepares structured input for Engine 5 (COMPANION).",
+              "context": "Professors upload lecture materials through Eureka. Files can be PDF, PPTX, images, audio, or text. The pipeline must detect format, extract content, and structure it for Gemini 2.0 Flash (Engine 5) consumption.",
+              "input_data": "File uploads via multipart/form-data. Supported: .pdf, .pptx, .png/.jpg (whiteboard photos), .mp3/.wav (lecture recordings), .txt/.md (notes). Max file size: 100MB per file, 500MB total per lecture.",
+              "task": "Step 1: Implement FastAPI upload endpoint with file validation. Step 2: Store raw files in MinIO/R2. Step 3: Implement format-specific extractors (PyMuPDF for PDF, python-pptx for PPTX, Tesseract for images, Whisper for audio). Step 4: Structure extracted content into Engine 5 input format. Step 5: Queue processing job and notify professor when companion is ready.",
+              "constraints": "File type validation (reject unsupported formats). Virus scanning before storage. Maximum 5 files per lecture upload. Audio files limited to 120 minutes. Processing must complete within 10 minutes. Store processing status for polling.",
+              "output_format": "Complete FastAPI upload router, file validators, format-specific extractors, MinIO storage utility, and Celery task for async processing.",
+              "example": "POST /api/v1/companion/upload → {lecture_id: 'LEC-001', files: [{name: 'slides.pdf', status: 'uploaded'}, {name: 'recording.mp3', status: 'uploaded'}]} → Background processing → {lecture_id: 'LEC-001', processing_status: 'complete', companion_ready: true}"
+            },
+            "quality_scores": {
+              "role": 8,
+              "objective": 9,
+              "context": 8,
+              "input_data": 9,
+              "task": 9,
+              "constraints": 9,
+              "output_format": 8,
+              "example": 8
+            },
+            "revisions_needed": []
+          },
+          {
+            "task_id": "P4-T4",
+            "task_name": "Student Performance Tracking & Analytics",
+            "task_description": "Implement performance tracking with trend analytics and gap analysis feedback to Engine 3.",
+            "assigned_model": "GPT-5.1 Codex",
+            "assignment_reason": "Production database operations with analytics queries and API endpoint development.",
+            "prompt": {
+              "role": "You are a Data Analytics Engineer building real-time student performance tracking systems with trend analysis, gap detection, and feedback loop integration.",
+              "objective": "Implement the student performance tracking system that stores micro-test results, computes trend analytics, and feeds gap analysis back to Engine 3 for roadmap adjustment.",
+              "context": "After Engine 4 generates assessments and students complete them, scores must be stored, analyzed for trends, and weak/strong subtopics identified. This data feeds back to Engine 3 to adjust the academic roadmap.",
+              "input_data": "Assessment results: {student_id, assessment_id, question_scores: [{question_id, score, max_score, concept_tested}], total_score, completed_at}. Historical data: all previous assessment results for the student.",
+              "task": "Step 1: Design performance storage schema. Step 2: Implement result ingestion endpoint. Step 3: Build trend computation (rolling average, improving/declining/stable detection). Step 4: Implement gap analysis (weak/strong subtopic identification based on assessment history). Step 5: Create Engine 3 feedback API (push gap analysis on semester boundaries). Step 6: Build professor dashboard analytics endpoint.",
+              "constraints": "Trend calculations must use at least 5 data points before classification. Gap analysis must consider recency (recent scores weighted higher). Professor dashboard must not expose individual student names without consent. Analytics queries must be indexed for < 500ms response.",
+              "output_format": "Complete Python module with SQLAlchemy models, analytics service, FastAPI endpoints for result ingestion and dashboard queries, and Engine 3 feedback pusher.",
+              "example": "After 8 assessments, student STU-001 shows: overall_trend: 'improving', weak_subtopics: ['interrupt handling'], strong_subtopics: ['GPIO programming', 'I2C protocol']. Pushed to Engine 3: {student_id: 'STU-001', semester: 3, gap_analysis: {weak: [...], strong: [...], recommended_focus: ['real-time systems']}}"
+            },
+            "quality_scores": {
+              "role": 8,
+              "objective": 9,
+              "context": 9,
+              "input_data": 9,
+              "task": 9,
+              "constraints": 9,
+              "output_format": 8,
+              "example": 9
+            },
+            "revisions_needed": []
+          },
+          {
+            "task_id": "P4-T5",
+            "task_name": "Adaptive Difficulty Algorithm",
+            "task_description": "Design the spaced-repetition and adaptive difficulty algorithm for assessment calibration.",
+            "assigned_model": "Claude Opus 4.6",
+            "assignment_reason": "Deep analysis and research synthesis for designing pedagogically sound adaptive algorithms based on learning science research.",
+            "prompt": {
+              "role": "You are a Learning Science Researcher and Algorithm Designer specializing in adaptive assessment systems, spaced repetition, and item response theory (IRT) for educational technology platforms.",
+              "objective": "Design and specify the adaptive difficulty algorithm for Eureka's Engine 4 that calibrates question difficulty based on student performance history, implements spaced repetition for weak concepts, and maintains psychometric validity.",
+              "context": "Engine 4 generates micro-assessments after every lecture. The difficulty must be calibrated to each student's current level. If a student consistently scores high, difficulty should increase. If they struggle, it should decrease. Weak concepts should be revisited using spaced repetition schedules.",
+              "input_data": "Student performance history: {assessments: [{topic, score, difficulty, timestamp, subtopic_scores}]}. Topic difficulty metadata: {topic, base_difficulty, prerequisite_difficulty}. Spaced repetition schedule: {concept, last_tested, interval, ease_factor}.",
+              "task": "Step 1: Research and select the optimal adaptive algorithm (compare IRT, Elo rating, Bayesian Knowledge Tracing). Step 2: Design the difficulty adjustment formula with specific parameters and thresholds. Step 3: Design the spaced repetition schedule (modified SM-2 algorithm). Step 4: Define the concept mastery model (when is a subtopic considered 'mastered'?). Step 5: Specify the complete algorithm as implementable pseudocode with all constants, formulas, and edge cases.",
+              "constraints": "Algorithm must converge to the student's true ability level within 5-10 assessments. Must handle cold-start (new students with no history). Must not oscillate rapidly between difficulty levels. Spaced repetition intervals must be psychometrically validated. All formulas must be mathematically specified (not vague).",
+              "output_format": "Complete algorithm specification document with: (1) Selected approach with justification, (2) Mathematical formulas with all constants, (3) Pseudocode implementation, (4) Edge case handling, (5) Validation metrics.",
+              "example": "Student scores [85, 90, 88, 92] on 'GPIO Programming' → ability estimate θ = 2.1 → next question difficulty b = 2.3 (slight increase). Student scores [45, 50, 40] on 'Interrupts' → ability estimate θ = -0.5 → next question difficulty b = -0.3 (decrease) → schedule remediation review in 3 days (spaced repetition)."
+            },
+            "quality_scores": {
+              "role": 9,
+              "objective": 9,
+              "context": 9,
+              "input_data": 9,
+              "task": 9,
+              "constraints": 9,
+              "output_format": 9,
+              "example": 8
+            },
+            "revisions_needed": []
+          }
+        ]
+      },
+      {
+        "phase_number": 5,
+        "phase_name": "Administration & Translation",
+        "phase_goal": "Build Engine 6 (Academic Administration Assistant) and Engine 7 (Global Knowledge Translation Engine).",
+        "tasks": [
+          {
+            "task_id": "P5-T1",
+            "task_name": "Administration Assistant Prompt",
+            "task_description": "Craft the production system prompt for substitute routing, feedback categorization, and hardware procurement evaluation.",
+            "assigned_model": "GPT-5.2 Codex",
+            "assignment_reason": "Backend logic with structured decision trees — 91% accuracy on complex routing and procurement justification tasks.",
+            "prompt": {
+              "role": "See 06_Engine_Admin_Assistant.md — ADMIN-AI agent with deterministic decision engine persona for three administrative workflows.",
+              "objective": "Automate substitute routing (score-based ranking), feedback processing (categorization + urgency + routing), and hardware procurement evaluation (cost-benefit + recommendation).",
+              "context": "Full Eureka context with three administrative workflows, staff/schedule/feedback/inventory databases, and auditability requirements.",
+              "input_data": "Three input schemas based on action_type: substitute_routing (professor absence + staff database), feedback_processing (anonymous submissions + taxonomy), hardware_evaluation (proposal + inventory + budget).",
+              "task": "Substitute: Filter → Score (30/25/20/15/10 weights) → Rank → Notify. Feedback: Categorize → Urgency → Duplicates → Spam → Route → Dashboard. Hardware: Inventory check → Cost-benefit → Decision logic → Procurement recommendation.",
+              "constraints": "Fairness (no bias in substitutes), anonymity protection (irreversible hashing), safety escalation (immediate for critical), budget accuracy, policy compliance, full auditability.",
+              "output_format": "Three output schemas: substitute_assignment + notifications + ranking, categorized_feedback + dashboard + alerts, hardware_evaluation + recommendation + cost-benefit.",
+              "example": "Full substitute routing: Dr. Raghavan absent → 3 candidates evaluated → Dr. Meena Krishnan selected (87.6/100) → notifications generated. See 06_Engine_Admin_Assistant.md."
+            },
+            "quality_scores": {
+              "role": 9,
+              "objective": 9,
+              "context": 9,
+              "input_data": 10,
+              "task": 10,
+              "constraints": 9,
+              "output_format": 10,
+              "example": 10
+            },
+            "revisions_needed": []
+          },
+          {
+            "task_id": "P5-T2",
+            "task_name": "Global Translation Engine Prompt",
+            "task_description": "Craft the production system prompt for multilingual content translation preserving technical accuracy.",
+            "assigned_model": "Gemini 3.1 Pro",
+            "assignment_reason": "Best-in-class multilingual accuracy with native support for 100+ languages and translation + summarization.",
+            "prompt": {
+              "role": "See 07_Engine_Translation.md — TRANSLATOR agent with multilingual technical translator + educational localizer persona.",
+              "objective": "Translate any Eureka content to student's preferred language preserving 100% technical accuracy, using field-standard terminology, with cultural adaptation and bilingual mode support.",
+              "context": "Full Eureka context as final delivery layer receiving from all 6 engines, serving 200+ languages, with NLLB-200 self-hosted primary and Groq Llama 3.3 70B fallback strategy.",
+              "input_data": "Source content (any engine output JSON), target language (ISO 639-1 + script), translation mode (full/bilingual), domain context, custom glossary overrides.",
+              "task": "8-step process: Content analysis → Glossary lookup → Translation execution (values only, preserve keys) → Cultural adaptation → Bilingual annotations → Pronunciation guides → Quality verification → Output assembly.",
+              "constraints": "Zero accuracy loss, formula/code preservation, JSON structure integrity, no content invention, field-standard terminology, script correctness, non-ambiguity for assessments.",
+              "output_format": "Complete JSON with translated_content (same structure), translation_metadata (term tracking, adaptations), quality_checks (5 verification flags).",
+              "example": "Full Hindi bilingual translation of Fourier Transform Context Card with Devanagari script, technical terminology, and 8 bilingual annotations. See 07_Engine_Translation.md."
+            },
+            "quality_scores": {
+              "role": 9,
+              "objective": 9,
+              "context": 9,
+              "input_data": 9,
+              "task": 9,
+              "constraints": 10,
+              "output_format": 10,
+              "example": 9
+            },
+            "revisions_needed": []
+          },
+          {
+            "task_id": "P5-T3",
+            "task_name": "Substitute Routing Algorithm",
+            "task_description": "Implement the decision tree for matching absent professors with available substitutes.",
+            "assigned_model": "GPT-5.2 Codex",
+            "assignment_reason": "Structured decision-making with explicit routing logic and JSON output for API integration.",
+            "prompt": {
+              "role": "You are a Backend Algorithm Engineer implementing deterministic decision-making systems with transparent scoring for educational administration platforms.",
+              "objective": "Implement the substitute routing algorithm as a Python service that filters, scores, ranks, and selects substitute professors based on Engine 6's defined scoring formula.",
+              "context": "When a professor is absent, Engine 6 provides the decision logic, but the scoring algorithm must be implemented as a standalone, testable service that the FastAPI endpoint calls.",
+              "input_data": "Absent professor profile, list of available staff with schedules/ratings/expertise, university policies (max load, rating minimum, department preference).",
+              "task": "Step 1: Implement eligibility filter (willingness, schedule, load, rating). Step 2: Implement scoring function (expertise 30%, schedule 25%, rating 20%, fairness 15%, department 10%). Step 3: Implement ranking and selection. Step 4: Implement notification content generation. Step 5: Add comprehensive unit tests for all edge cases.",
+              "constraints": "Algorithm must be deterministic (same input → same output). All scores must be between 0 and their maximum weight. Handle edge cases: 0 eligible candidates, tied scores, all candidates at max load. Unit test coverage > 95%.",
+              "output_format": "Complete Python service class with scoring methods, filter logic, ranking, and pytest test file with 15+ test cases.",
+              "example": "substitute_router.score(candidate={expertise: ['Embedded Systems', 'RTOS'], rating: 4.3, sub_count: 1, dept: 'ECE'}, required={expertise: ['Embedded', 'ARM', 'RTOS'], dept: 'ECE'}) → {total: 87.6, breakdown: {expertise: 22.5, schedule: 25.0, rating: 17.2, fairness: 12.9, dept: 10.0}}"
+            },
+            "quality_scores": {
+              "role": 8,
+              "objective": 9,
+              "context": 8,
+              "input_data": 8,
+              "task": 9,
+              "constraints": 9,
+              "output_format": 8,
+              "example": 9
+            },
+            "revisions_needed": []
+          },
+          {
+            "task_id": "P5-T4",
+            "task_name": "Anonymous Feedback Pipeline",
+            "task_description": "Build the secure anonymous feedback system with NLP categorization and admin dashboard.",
+            "assigned_model": "facebook/bart-large-mnli (self-hosted)",
+            "assignment_reason": "Zero-shot classification via HuggingFace pipeline — free, CPU-efficient, no API key needed for categorizing feedback by type and urgency at scale.",
+            "prompt": {
+              "role": "You are a text classification specialist optimized for fast, accurate categorization of student feedback submissions in educational contexts.",
+              "objective": "Classify each anonymous student feedback submission into the correct category and urgency level from the Eureka taxonomy, extract the actionable signal, and detect duplicates/spam.",
+              "context": "Students submit anonymous feedback through Eureka. Each submission must be categorized (academic_quality, infrastructure, safety, administrative, appreciation, personal, spam_noise) and assigned urgency (critical, high, medium, low). Safety-related feedback must trigger immediate alerts.",
+              "input_data": "Feedback text (10-500 words), optional student-selected category, optional course/department reference.",
+              "task": "Step 1: Classify into one of 7 categories. Step 2: Assign urgency level. Step 3: Extract 1-sentence actionable signal. Step 4: Flag if safety-related (immediate escalation). Step 5: Return classification JSON.",
+              "constraints": "Classification accuracy target > 95%. Safety false-negative rate < 1% (never miss a safety concern). Process each submission in < 500ms. Never attempt to identify the student. Treat all content as potentially sensitive.",
+              "output_format": "{category: string, urgency: string, actionable_signal: string, safety_flag: boolean, confidence: number}",
+              "example": "INPUT: 'The oscilloscopes in the Signal Processing Lab are very old and keep giving wrong readings. Three students got incorrect results in last week's FFT experiment because of this.' → OUTPUT: {category: 'infrastructure', urgency: 'high', actionable_signal: 'Signal Processing Lab oscilloscopes producing incorrect readings, affecting student experiment results', safety_flag: false, confidence: 0.94}"
+            },
+            "quality_scores": {
+              "role": 8,
+              "objective": 9,
+              "context": 8,
+              "input_data": 8,
+              "task": 8,
+              "constraints": 9,
+              "output_format": 9,
+              "example": 9
+            },
+            "revisions_needed": []
+          },
+          {
+            "task_id": "P5-T5",
+            "task_name": "NLLB-200 Integration",
+            "task_description": "Implement the NLLB-200 self-hosted translation pipeline with Groq Llama 3.3 70B fallback.",
+            "assigned_model": "GPT-5.1 Codex Mini",
+            "assignment_reason": "Utility integration scripts and boilerplate code for model pipeline wiring.",
+            "prompt": {
+              "role": "You are a ML Pipeline Engineer integrating NLLB-200 self-hosted translation into a production FastAPI application with Groq API fallback routing.",
+              "objective": "Implement the translation pipeline that uses NLLB-200 distilled-600M (self-hosted) as primary and falls back to Groq Llama 3.3 70B (free tier) for complex or high-priority translations.",
+              "context": "Engine 7 needs two translation tiers: fast/offline (NLLB-200 self-hosted for bulk content like notifications, standard cards) and high-quality fallback (Groq Llama 3.3 70B free tier for Context Cards, assessments, and lecture companions).",
+              "input_data": "Translation request: {text, source_lang, target_lang, quality_tier: 'standard' | 'premium', content_type}. NLLB-200 distilled-600M model via HuggingFace transformers. Groq API (llama-3.3-70b-versatile) for premium tier.",
+              "task": "Step 1: Implement NLLB-200 translation wrapper using HuggingFace transformers pipeline (batch support, 200 language pairs). Step 2: Implement quality routing logic (standard → NLLB-200, premium → Groq). Step 3: Add translation caching (Redis with lang-pair key). Step 4: Implement health monitoring for model availability. Step 5: Model is loaded once at startup using NLLB_MODEL_PATH env var.",
+              "constraints": "NLLB-200 model must be loaded once at startup (not per-request). Batch translations max 50 segments per call. Cache TTL: 30 days for static content, 7 days for dynamic. Graceful fallback if NLLB fails → Groq API. No billing required.",
+              "output_format": "Complete Python module with TranslationService class, NLLB-200 wrapper, Groq fallback, routing logic, caching layer, and FastAPI health endpoint.",
+              "example": "translate(text='The oscilloscope measures voltage over time.', source='en', target='hi', tier='standard') → NLLB-200 → 'ऑसिलोस्कोप समय के साथ वोल्टेज मापता है।' (80ms). translate(text='<full context card JSON>', source='en', target='hi', tier='premium') → Groq Llama 3.3 70B → '<translated JSON>' (2s)."
+            },
+            "quality_scores": {
+              "role": 8,
+              "objective": 9,
+              "context": 9,
+              "input_data": 8,
+              "task": 9,
+              "constraints": 8,
+              "output_format": 8,
+              "example": 8
+            },
+            "revisions_needed": []
+          }
+        ]
+      },
+      {
+        "phase_number": 6,
+        "phase_name": "Complete Web App Frontend Build",
+        "phase_goal": "Build the full Next.js web application with design system, all role-specific screens, gamification, real-time events, and professional UI/UX.",
+        "tasks": [
+          {
+            "task_id": "P6-T1",
+            "task_name": "Design System & Component Library",
+            "task_description": "Set up Tailwind CSS 4 theme with Eureka color palette, typography scale, motion tokens, and configure shadcn/ui component library with custom styling.",
+            "assigned_model": "GPT-5.4",
+            "assignment_reason": "Frontend code generation with strong design-system understanding and Tailwind/shadcn expertise.",
+            "prompt": {
+              "role": "You are a Senior Frontend Design Engineer specializing in Tailwind CSS design systems, shadcn/ui component customization, and Framer Motion animation libraries for professional SaaS applications.",
+              "objective": "Build the complete design system foundation for Project Eureka's web app: Tailwind theme configuration, shadcn/ui component library with Eureka branding, Framer Motion animation presets, and dark/light mode support.",
+              "context": "Project Eureka is an AI-powered educational platform with three user roles (Student, Professor, Admin). The design philosophy is 'Knowledge Observatory' — sophisticated, immersive, warm. See 00_Implementation_Strategy.md for full visual design system specification including color palette, typography scale, motion guidelines, and component design language.",
+              "input_data": "Color palette: Primary Sapphire (#3b82f6→#1e3a5f), Secondary Emerald (#10b981), Accent Amber (#f59e0b), Rose for alerts. Specialization accents: Teal, Violet, Cyan, Orange, Indigo, Pink. Typography: Inter (display/body) + JetBrains Mono (code). Dark mode surface: #0f172a→#334155.",
+              "task": "Step 1: Configure tailwind.config.ts with full color palette, typography scale, spacing, and animation keyframes. Step 2: Install and configure shadcn/ui with Eureka theme (Button, Card, Dialog, Input, Select, Tabs, Toast, Badge, Table, Dropdown, Sheet, Skeleton, Progress). Step 3: Create Framer Motion animation presets (pageTransition, cardHover, slideIn, fadeUp, springBounce, confetti trigger). Step 4: Implement next-themes dark/light/system mode with zero-flash. Step 5: Create global CSS with glass-morphism utilities, gradient presets, and focus ring styles. Step 6: Build Storybook for component showcase.",
+              "constraints": "All components must meet WCAG 2.1 AA contrast ratios. Dark mode must not be an afterthought — design both modes simultaneously. Animation presets must respect prefers-reduced-motion. Use CSS custom properties for theme tokens so they're overridable. Bundle size for design system < 30KB gzipped.",
+              "output_format": "Complete files: tailwind.config.ts, app/globals.css, lib/animations.ts (Framer presets), components/ui/ (all shadcn components customized), lib/theme-provider.tsx, and Storybook stories for each component.",
+              "example": "Button component: Primary (sapphire-600 bg, white text, hover scale-102, focus ring-2 ring-sapphire-500 ring-offset-2), Outline (transparent bg, sapphire-600 border, hover sapphire-50 bg), Ghost (no border, hover slate-100 bg). All variants with dark mode counterparts."
+            },
+            "quality_scores": { "role": 9, "objective": 9, "context": 9, "input_data": 10, "task": 9, "constraints": 9, "output_format": 9, "example": 9 },
+            "revisions_needed": []
+          },
+          {
+            "task_id": "P6-T2",
+            "task_name": "Auth Pages & Application Shell",
+            "task_description": "Build login/register pages, JWT auth flow, role-based routing, sidebar navigation, header with user menu, and theme switcher.",
+            "assigned_model": "GPT-5.4",
+            "assignment_reason": "Full-stack frontend implementation with auth integration and layout architecture.",
+            "prompt": {
+              "role": "You are a Senior Next.js Engineer specializing in authentication flows, role-based routing, and application shell architecture for multi-tenant SaaS platforms.",
+              "objective": "Build the authentication pages and application shell for Project Eureka: login, register, SSO callback, protected route layout, sidebar navigation per role, header with user menu and theme toggle, and responsive shell with Framer Motion page transitions.",
+              "context": "Eureka has three user roles: Student, Professor, Administrator. Each sees a different sidebar and dashboard. Auth uses JWT with refresh tokens from the FastAPI backend at /api/v1/auth. The shell must feel premium — smooth transitions, elegant navigation, professional branding.",
+              "input_data": "Auth endpoints: POST /auth/login, POST /auth/register, POST /auth/refresh, GET /auth/me. Roles: student (sidebar: Dashboard, Discovery, Roadmap, Courses, Assessments, Lectures, Profile), professor (sidebar: Dashboard, Upload, Analytics, Courses, Feedback), admin (sidebar: Command Center, Substitutes, Feedback, Procurement, Analytics).",
+              "task": "Step 1: Build login page with email/password form, SSO button, animated gradient background. Step 2: Build register page with role selection and profile setup. Step 3: Implement auth middleware (JWT storage in httpOnly cookie, silent refresh, redirect on 401). Step 4: Build the dashboard layout with: collapsible sidebar (240px expanded, 64px collapsed), role-based navigation items with Lucide icons, header with search bar + notification bell + user avatar dropdown + theme toggle. Step 5: Implement Framer Motion page transitions (layoutId for shared elements, AnimatePresence for route changes). Step 6: Add keyboard shortcuts (Cmd+K for search, Cmd+B for sidebar toggle).",
+              "constraints": "Auth tokens stored in secure httpOnly cookies, never in localStorage. CSRF protection via same-site cookie attribute. Sidebar state persisted in localStorage. Shell must work at 1024px minimum width. Page transitions must complete in < 400ms. Search opens a Cmd+K spotlight dialog.",
+              "output_format": "Complete files: app/(auth)/login/page.tsx, app/(auth)/register/page.tsx, app/(dashboard)/layout.tsx, components/layouts/Sidebar.tsx, components/layouts/Header.tsx, components/layouts/ThemeToggle.tsx, middleware.ts (auth), lib/auth.ts (token management).",
+              "example": "Sidebar: Fixed left panel with Eureka logo at top, navigation items with icon + label, active item has sapphire-600 text + sapphire-50 bg + left-3 border-sapphire-600, collapse button at bottom. Framer Motion: sidebar width animates from 240→64px with spring physics."
+            },
+            "quality_scores": { "role": 9, "objective": 9, "context": 9, "input_data": 9, "task": 9, "constraints": 9, "output_format": 9, "example": 9 },
+            "revisions_needed": []
+          },
+          {
+            "task_id": "P6-T3",
+            "task_name": "Student Discovery Lab & Roadmap & Dashboard",
+            "task_description": "Build the Discovery Lab exploration interface, specialization results with radar charts, interactive academic roadmap timeline, and student daily dashboard.",
+            "assigned_model": "GPT-5.4",
+            "assignment_reason": "Complex interactive UI with data visualization (Recharts radar), timeline components, and animation-heavy interfaces.",
+            "prompt": {
+              "role": "You are a Senior Frontend Engineer specializing in interactive data visualization, gamified educational interfaces, and complex stateful UI with Recharts, Framer Motion, and Next.js App Router.",
+              "objective": "Build the three most important student screens: (1) Discovery Lab with interactive station cards and results with animated radar chart, (2) Interactive academic roadmap timeline with semester expansion, (3) Daily learning dashboard with progress rings, today's items, and streak counter.",
+              "context": "The Discovery Lab is the student's first experience in Eureka — it must be impressive and engaging. The Roadmap is their long-term companion. The Dashboard is visited daily. See 01_Engine_Discovery.md and 03_Engine_Learning_Journey.md for UI rendering specifications.",
+              "input_data": "Engine 1 output: student_profile JSON with domain_engagement_scores, top_recommendations, confidence_assessment. Engine 3 output: semester_plans with courses, labs, self_study, milestones. Dashboard data: today_items, semester_progress, streak_count, concepts_mastered.",
+              "task": "Step 1: Build Discovery Lab with station cards (grid layout, flip animation, progress tracking, particle background effect). Step 2: Build Discovery Results page (animated radar chart via Recharts, recommendation cards with spring animation, evidence expandable sections, career chips, confetti on accept). Step 3: Build Interactive Roadmap Timeline (horizontal scrollable on desktop, color-coded semester nodes: green=completed, pulse-amber=current, gray=upcoming, click-to-expand with spring animation). Step 4: Build Daily Dashboard (welcome banner with streak, today's items list with priority badges, semester progress ring, context card preview, quick-action buttons). Step 5: Wire all screens to TanStack Query hooks for Engine 1 and Engine 3 APIs.",
+              "constraints": "Radar chart must animate on mount with 800ms ease-out. Roadmap must handle 8+ semesters without horizontal overflow issues. Dashboard must load critical content within 1.5s (use skeleton screens). All card layouts must work from 1024px to 2560px. Confetti uses canvas-confetti (lightweight, no heavy deps).",
+              "output_format": "Complete page files: app/(dashboard)/student/discovery/page.tsx, student/discovery/results/page.tsx, student/roadmap/page.tsx, student/page.tsx (dashboard). Component files: components/engine-views/DiscoveryLab.tsx, DiscoveryResults.tsx, RoadmapTimeline.tsx, DashboardWidgets.tsx. Hooks: hooks/useDiscovery.ts, hooks/useJourney.ts.",
+              "example": "Discovery Results radar: <ResponsiveContainer><RadarChart data={scores}><PolarGrid stroke='#e2e8f0'/><PolarAngleAxis dataKey='domain' tick={{fill:'#64748b'}}/><Radar name='match' dataKey='score' stroke='#3b82f6' fill='#3b82f6' fillOpacity={0.15} animationDuration={800}/></RadarChart></ResponsiveContainer>"
+            },
+            "quality_scores": { "role": 9, "objective": 10, "context": 10, "input_data": 9, "task": 10, "constraints": 9, "output_format": 9, "example": 9 },
+            "revisions_needed": []
+          },
+          {
+            "task_id": "P6-T4",
+            "task_name": "Student Assessments & Lecture Companion & Profile",
+            "task_description": "Build the timed quiz player, score reveal with gap analysis, lecture companion tabbed viewer, and student profile/settings page.",
+            "assigned_model": "GPT-5.4",
+            "assignment_reason": "Complex interactive UI with timed quiz mechanics, tabbed content rendering, and KaTeX formula support.",
+            "prompt": {
+              "role": "You are a Senior Frontend Engineer specializing in interactive assessment interfaces, timed quiz mechanics, content rendering (KaTeX, syntax highlighting), and tabbed document viewers for educational platforms.",
+              "objective": "Build assessment and lecture companion screens: (1) Timed quiz player with progress bar and question navigation, (2) Score reveal with animated results and gap analysis radar, (3) Tabbed lecture companion viewer with summary/concepts/applications/lab/catch-up tabs, (4) Student profile with settings and language preferences.",
+              "context": "See 04_Engine_Evaluation.md and 05_Engine_Lecture_Companion.md for UI rendering specifications. Assessments are timed micro-tests (4-8 questions, 20-45 min). Lecture companions are rich content documents with formulas and code examples.",
+              "input_data": "Engine 4 output: assessment package with questions (MCQ, code scenario, calculation), answer keys, rubrics, remediation links, gap_analysis. Engine 5 output: lecture_companion with key_concepts, summary, applications, lab_connections, catch_up_package.",
+              "task": "Step 1: Build timed quiz player (header with timer + progress bar, question card with syntax highlighting for code, MCQ with animated radio buttons, text input with markdown preview, previous/next navigation). Step 2: Build score reveal page (animated counter 0→score, per-question check/cross marks, expandable rubric, remediation links to context cards, gap analysis radar chart overlay pre/post). Step 3: Build lecture companion viewer (tabbed interface with crossfade animation, KaTeX rendering for formulas, syntax highlighting for code blocks, language toggle triggering Engine 7, audio timestamp links). Step 4: Build assessment history page (sparkline trend charts, filters by topic/date, performance summary). Step 5: Build student profile page (personal info, language preference, notification settings, learning goals, theme preference).",
+              "constraints": "Timer must be accurate (use requestAnimationFrame, not setInterval). Questions must NOT be cached in client (prevent cheating). KaTeX must be dynamically imported (code splitting). Tab selection persisted in URL via nuqs. Assessment submission must work offline (queue and submit on reconnect).",
+              "output_format": "Complete page and component files for assessment player, score reveal, companion viewer, assessment history, and student profile. Hooks: hooks/useEvaluation.ts, hooks/useCompanion.ts, hooks/useTranslation.ts.",
+              "example": "Quiz timer: <div className='flex items-center gap-2'><Clock className='w-4 h-4 text-amber-500'/><span className={cn('font-mono text-sm', timeLeft < 120 && 'text-rose-500 animate-pulse')}>{formatTime(timeLeft)}</span></div>"
+            },
+            "quality_scores": { "role": 9, "objective": 9, "context": 10, "input_data": 9, "task": 10, "constraints": 10, "output_format": 9, "example": 9 },
+            "revisions_needed": []
+          },
+          {
+            "task_id": "P6-T5",
+            "task_name": "Professor Upload Hub & Analytics Dashboard",
+            "task_description": "Build the drag-and-drop lecture upload with AI processing overlay, professor analytics dashboard with class heatmaps and score distributions, and course management.",
+            "assigned_model": "GPT-5.4",
+            "assignment_reason": "Complex UI with file upload mechanics, real-time processing status, and data visualization dashboards.",
+            "prompt": {
+              "role": "You are a Senior Frontend Engineer specializing in file upload interfaces, real-time processing feedback (WebSocket/SSE), and analytics dashboard design with Recharts for educational platforms.",
+              "objective": "Build professor-facing screens: (1) Lecture upload hub with drag-and-drop zone and AI processing overlay, (2) Class analytics dashboard with topic mastery heatmap and score distributions, (3) Course management with lecture list and companion preview.",
+              "context": "See 05_Engine_Lecture_Companion.md UI specs. Professors upload lecture materials which trigger Engine 5. Processing takes 1-5 minutes. The analytics dashboard shows how students are performing across topics using Engine 4 data.",
+              "input_data": "Upload endpoint: POST /api/v1/companion/upload (multipart). Processing status: WebSocket /ws/processing. Analytics: GET /api/v1/evaluation/class-stats, /topic-heatmap, /at-risk. File types: PDF, PPTX, MP3, WAV, PNG, JPG, TXT.",
+              "task": "Step 1: Build drag-and-drop upload zone (dashed border, pulse on hover, file type badges, multi-file thumbnails with individual progress bars). Step 2: Build AI processing overlay (glass-effect modal, live progress ring via Socket.IO, stage indicators: Uploading→Processing→Extracting→Generating→Done). Step 3: Build companion preview page (inline preview of generated companion, approve/edit/regenerate actions). Step 4: Build analytics dashboard (topic mastery heatmap using Recharts, score distribution bell curve, at-risk student list with severity indicators, trend sparklines). Step 5: Build course management page (lecture list with status badges, bulk upload, companion links).",
+              "constraints": "Upload must support files up to 100MB with chunked upload for reliability. Processing overlay must reconnect on WebSocket drop. Heatmap must handle 50+ topics (scrollable). At-risk student names shown only to assigned professors (RBAC enforced). Dashboard must refresh data on SSE events.",
+              "output_format": "Complete page files: professor/upload/page.tsx, professor/analytics/page.tsx, professor/courses/page.tsx. Components: LectureUpload.tsx, AIProcessingOverlay.tsx, TopicHeatmap.tsx, ScoreDistribution.tsx, AtRiskList.tsx.",
+              "example": "Upload zone: <div onDrop={handleDrop} className='border-2 border-dashed border-slate-300 rounded-xl p-12 text-center hover:border-sapphire-400 hover:bg-sapphire-50/50 transition-colors cursor-pointer'>"
+            },
+            "quality_scores": { "role": 9, "objective": 9, "context": 9, "input_data": 9, "task": 9, "constraints": 9, "output_format": 9, "example": 9 },
+            "revisions_needed": []
+          },
+          {
+            "task_id": "P6-T6",
+            "task_name": "Admin Command Center",
+            "task_description": "Build the admin command center with substitute routing panel, feedback processing dashboard with urgency filters, and procurement evaluation queue.",
+            "assigned_model": "GPT-5.4",
+            "assignment_reason": "Complex dashboard UI with approval workflows, real-time alerts, and multi-panel data visualization.",
+            "prompt": {
+              "role": "You are a Senior Frontend Engineer specializing in administrative dashboard interfaces, approval workflow UIs, and real-time alert systems with data visualization for enterprise platforms.",
+              "objective": "Build the admin command center for Project Eureka: (1) Action summary bar with live counts, (2) Substitute routing panel with score breakdown and approve/override, (3) Feedback dashboard with category donut chart and urgency filters, (4) Procurement evaluation queue with cost-benefit display.",
+              "context": "See 06_Engine_Admin_Assistant.md UI specs. Admin workflows are time-sensitive — substitutes need assignment within minutes, critical feedback needs immediate attention. The UI must prioritize urgency and actionability.",
+              "input_data": "Engine 6 outputs: substitute_assignment (ranked candidates with scores), categorized_feedback (categories, urgency, actionable signals), hardware_evaluation (cost-benefit, recommendation). Endpoints: /api/v1/admin/substitute, /api/v1/admin/feedback, /api/v1/admin/procurement.",
+              "task": "Step 1: Build action summary bar (4 status cards: substitutes needed, feedback pending, procurement reviews, system health — each with colored left border, animated count, click to section). Step 2: Build substitute panel (absence alert card, AI recommendation with composite score ring, score breakdown bar chart, approve/override buttons, full ranking table with expandable rows). Step 3: Build feedback dashboard (category donut chart via Recharts PieChart, urgency filter pills, critical alerts red banner, feedback card list with category/urgency badges, trend panel). Step 4: Build procurement panel (proposal card, AI analysis with cost-per-student metric, budget impact bar, inventory check status, approve/committee/deny action buttons). Step 5: Wire to SSE events for live updates (substitute_assigned, feedback_alert).",
+              "constraints": "Critical feedback alerts must appear within 5 seconds of SSE event (no polling delay). Substitute approval must include confirmation dialog with notification preview. All actions must be audit-logged (action, admin_id, timestamp). Donut chart must handle 7 categories with clear colors. Action buttons must disable after click until server confirms.",
+              "output_format": "Complete page files: admin/page.tsx (command center), admin/substitutes/page.tsx, admin/feedback/page.tsx, admin/procurement/page.tsx. Components: AdminSubstitutePanel.tsx, FeedbackDashboard.tsx, ProcurementReview.tsx, ActionSummaryBar.tsx.",
+              "example": "Action summary card: <Card className='flex items-center gap-4 p-4 border-l-4 border-rose-500'><div className='text-2xl font-bold text-rose-600 tabular-nums'>{count}</div><div className='text-sm text-slate-500'>Substitutes Needed</div></Card>"
+            },
+            "quality_scores": { "role": 9, "objective": 9, "context": 10, "input_data": 9, "task": 9, "constraints": 9, "output_format": 9, "example": 9 },
+            "revisions_needed": []
+          },
+          {
+            "task_id": "P6-T7",
+            "task_name": "Gamification Layer & Real-Time Notifications",
+            "task_description": "Build the gamification system (streaks, XP, badges, progress rings, mastery map) and real-time notification system (SSE events, toast notifications, notification center).",
+            "assigned_model": "GPT-5.4",
+            "assignment_reason": "Engagement-focused UI with animation-heavy components, real-time event handling, and reward mechanics.",
+            "prompt": {
+              "role": "You are a Gamification UI Engineer specializing in educational engagement systems, achievement animations, real-time event-driven interfaces, and motivational UX design patterns.",
+              "objective": "Build the gamification and real-time notification layers for Eureka: (1) Streak counter with flame animation, (2) XP system with level progress bar, (3) Achievement badges with unlock celebrations, (4) Progress rings for semester/topic completion, (5) Notification center with SSE-driven live updates, (6) Toast notifications with custom styling.",
+              "context": "See 00_Implementation_Strategy.md gamification and real-time architecture sections. Gamification drives daily engagement. Real-time notifications keep students and admins informed of new content, assessments, and critical events.",
+              "input_data": "Gamification endpoints: GET /api/v1/students/me/stats (streak, xp, badges, progress). SSE stream: GET /api/v1/events/stream. Event types: companion_ready, assessment_ready, translation_ready, roadmap_updated, achievement_unlocked. Notification storage: GET /api/v1/notifications.",
+              "task": "Step 1: Build streak counter component (flame icon 🔥, day count, animated increment on daily action, streak-broken recovery message). Step 2: Build XP system (current XP / next level threshold, progress bar with gradient fill, XP popup on action: +50 Assessment, +10 Read, +25 Streak). Step 3: Build achievement badge grid (earned badges with glass-effect circles, locked badges grayed out, unlock animation with confetti burst and spring scale-up, badge detail modal). Step 4: Build progress rings (animated circular SVG, semester ring and topic rings, mount animation with easing). Step 5: Build notification center (bell icon with unread count badge, dropdown panel with categorized notifications, read/unread states, mark all read, link to relevant page). Step 6: Build toast system (react-hot-toast with Eureka styling: colored left border, icon, auto-dismiss 5s, action buttons for critical toasts). Step 7: Wire SSE EventSource with auto-reconnect and event routing to toast/notification stores.",
+              "constraints": "Confetti must use canvas-confetti (< 5KB). SSE must auto-reconnect with exponential backoff (1s, 2s, 4s, 8s, max 32s). Notifications capped at 50 most recent. Badge grid must handle 20+ badges without layout issues. All animations must respect prefers-reduced-motion. XP calculations happen server-side (no client-side cheating).",
+              "output_format": "Complete components: StreakCounter.tsx, XPBar.tsx, BadgeGrid.tsx, ProgressRing.tsx, NotificationCenter.tsx, useRealtimeEvents.ts hook, useNotificationStore.ts Zustand store. Integration into dashboard layout.",
+              "example": "Achievement unlock: <AnimatePresence><motion.div initial={{scale:0, opacity:0}} animate={{scale:1, opacity:1}} transition={{type:'spring', stiffness:300, damping:20}} onAnimationComplete={() => confetti({particleCount:100, spread:70})}><BadgeDisplay badge={newBadge}/></motion.div></AnimatePresence>"
+            },
+            "quality_scores": { "role": 9, "objective": 10, "context": 9, "input_data": 9, "task": 10, "constraints": 9, "output_format": 9, "example": 10 },
+            "revisions_needed": []
+          },
+          {
+            "task_id": "P6-T8",
+            "task_name": "API Client Layer & State Management & Error Handling",
+            "task_description": "Build the typed API client with TanStack Query, Zustand stores for client state, global error boundaries, and loading/skeleton states.",
+            "assigned_model": "GPT-5.4",
+            "assignment_reason": "Infrastructure frontend code requiring strong typing, caching strategy, and error handling patterns.",
+            "prompt": {
+              "role": "You are a Frontend Infrastructure Engineer specializing in API client architecture (TanStack Query v5), state management (Zustand), error boundary design, and loading state patterns for production React applications.",
+              "objective": "Build the frontend infrastructure layer for Eureka: (1) Typed API client with Axios interceptors and TanStack Query configuration, (2) Zustand stores for auth, theme, notifications, and onboarding state, (3) Global error boundary with fallback UI, (4) Skeleton components for every loading state, (5) Offline detection and retry logic.",
+              "context": "This layer underpins all frontend screens. It must be rock-solid. Every API call goes through TanStack Query for caching, deduplication, and background refresh. Zustand handles client-only state. Error boundaries catch rendering failures without crashing the whole app.",
+              "input_data": "Backend base URL from env var. Auth: JWT in httpOnly cookies. Response envelope: {status, data, error, timestamp}. Cache policies defined in 08_Orchestration_Map.md frontend data flow section.",
+              "task": "Step 1: Build typed Axios instance with request/response interceptors (auto-attach cookies, 401 refresh, logging). Step 2: Configure TanStack QueryClient with default cache policies, retry logic (3 retries for network errors, 0 for 4xx), and devtools in development. Step 3: Build Zustand stores: useAuthStore (user, role, login/logout actions), useThemeStore (mode, accent, persist to localStorage), useNotificationStore (items, unread count, add/dismiss actions). Step 4: Build global ErrorBoundary component (friendly error message, 'Try again' button, error reporting to Sentry). Step 5: Build skeleton components (CardSkeleton, TableSkeleton, ChartSkeleton, TextSkeleton) matching every page layout. Step 6: Build offline detection banner ('You are offline — changes will sync when reconnected').",
+              "constraints": "API client must be type-safe (TypeScript generics for request/response). No raw fetch/axios calls in components — always use TanStack hooks. Zustand stores must use immer middleware for immutable updates. Error boundary must log to console in dev and to Sentry in production. Skeleton screens must exactly match the layout of loaded content (no layout shift).",
+              "output_format": "Complete files: lib/api-client.ts, lib/query-client.ts, stores/useAuthStore.ts, stores/useThemeStore.ts, stores/useNotificationStore.ts, components/ErrorBoundary.tsx, components/skeletons/*.tsx, components/OfflineBanner.tsx.",
+              "example": "API hook pattern: export function useStudentProfile() { return useQuery({ queryKey: ['student', 'profile'], queryFn: () => api.get<StudentProfile>('/students/me'), staleTime: 5 * 60 * 1000, }) }"
+            },
+            "quality_scores": { "role": 9, "objective": 9, "context": 9, "input_data": 9, "task": 9, "constraints": 9, "output_format": 9, "example": 9 },
+            "revisions_needed": []
+          }
+        ]
+      },
+      {
+        "phase_number": 7,
+        "phase_name": "Orchestration, Testing & Production Hardening",
+        "phase_goal": "Wire the orchestration layer, run end-to-end tests, load test under peak conditions, conduct security audit, and deploy to production.",
+        "tasks": [
+          {
+            "task_id": "P7-T1",
+            "task_name": "Orchestration Layer & Workflow Engine",
+            "task_description": "Implement the central orchestration service managing inter-engine handoffs and workflow state.",
+            "assigned_model": "Claude Opus 4.6",
+            "assignment_reason": "Highest-complexity architectural decision — requires understanding all 7 engine interactions and designing fault-tolerant handoff logic.",
+            "prompt": {
+              "role": "You are a Distributed Systems Architect designing the central orchestration layer for a multi-agent AI platform with 7 interconnected engines, complex workflow routing, and fault-tolerant state management.",
+              "objective": "Design and specify the Eureka Orchestration Layer that routes requests to the correct engine, manages handoffs between engines, maintains workflow state, handles failures gracefully, and ensures the three main workflows (onboarding, daily learning, administration) execute correctly.",
+              "context": "All 7 Eureka engines are independently deployed services. The orchestrator is the central coordinator. See 08_Orchestration_Map.md for full workflow diagrams, handoff specification table, and frontend data flow architecture.",
+              "input_data": "Workflow definitions: Workflow A (Onboarding: E1→E3→E2→E7), Workflow B (Daily Loop: upload→E5→[E4∥E7]→catch-up), Workflow C (Admin: absence→E6, feedback→E6, hardware→E6). Engine endpoints, input/output schemas, SLAs, and failure modes.",
+              "task": "Step 1: Define the workflow state machine for all 3 workflows. Step 2: Design the routing logic (user action → workflow → engine sequence). Step 3: Specify the handoff protocol (JSON schema validation between engines). Step 4: Design failure handling (retry, fallback, circuit breaker patterns). Step 5: Implement the state persistence model (PostgreSQL-backed saga pattern). Step 6: Wire SSE event publishing for frontend real-time updates. Step 7: Define monitoring and alerting thresholds.",
+              "constraints": "Must handle engine unavailability gracefully (circuit breaker with 30s timeout). State must survive service restarts. Workflow rollback capabilities for critical failures. Support parallel engine execution (E4 and E7 run simultaneously in Workflow B). End-to-end latency SLAs: Onboarding < 2 min, Daily Loop < 5 min, Admin < 30 sec.",
+              "output_format": "Complete architecture specification: state machine diagrams (Mermaid), routing table, handoff protocol spec, failure handling matrix, SSE event publication code, and Python implementation for the orchestrator service.",
+              "example": "Workflow B trigger: Professor uploads lecture → Orchestrator creates workflow instance → Calls E5 (COMPANION) → On E5 success: parallel dispatch to E4 + E7 → On both complete: publish companion_ready + assessment_ready SSE events → Students see toast notification."
+            },
+            "quality_scores": { "role": 9, "objective": 9, "context": 9, "input_data": 9, "task": 10, "constraints": 9, "output_format": 9, "example": 9 },
+            "revisions_needed": []
+          },
+          {
+            "task_id": "P7-T2",
+            "task_name": "End-to-End Integration Testing",
+            "task_description": "Build comprehensive E2E test suite covering all 3 workflows across frontend and backend.",
+            "assigned_model": "GPT-5.2 Codex",
+            "assignment_reason": "Test code generation with strong understanding of frontend testing (Playwright) and backend testing (pytest) patterns.",
+            "prompt": {
+              "role": "You are a QA Automation Engineer specializing in end-to-end testing for full-stack web applications using Playwright for frontend and pytest for backend integration tests.",
+              "objective": "Build the complete E2E test suite for Project Eureka covering all 3 workflows: student onboarding, daily learning loop, and admin operations — testing both the Next.js frontend and FastAPI backend.",
+              "context": "Eureka has a Next.js frontend and FastAPI backend with 7 AI engines. Tests must verify that user actions in the browser correctly trigger backend workflows and display results. AI API calls should be mocked for deterministic testing.",
+              "input_data": "Frontend pages: login, discovery lab, roadmap, courses, assessments, lectures, professor upload, professor analytics, admin command center. Backend endpoints: all /api/v1/* routes. Mock data: fixture files for all 7 engine outputs.",
+              "task": "Step 1: Set up Playwright test infrastructure with fixtures, mock server, and test data factories. Step 2: Write Workflow A tests (register → discovery lab → view results → view roadmap → view context cards). Step 3: Write Workflow B tests (professor login → upload lecture → wait for processing → student views companion → student takes assessment). Step 4: Write Workflow C tests (admin login → view substitute recommendation → approve → verify notifications; submit feedback → verify categorization). Step 5: Write accessibility tests (axe-core integration for every page). Step 6: Write visual regression tests (screenshot comparison for key screens).",
+              "constraints": "All AI API calls must be mocked (never call real AI APIs in tests). Tests must run in CI within 10 minutes. Use MSW (Mock Service Worker) for API mocking in frontend tests. Test data must be isolated (each test gets a fresh database state). Visual regression threshold: 0.1% pixel difference.",
+              "output_format": "Complete test files: tests/e2e/workflow-a.spec.ts, workflow-b.spec.ts, workflow-c.spec.ts, accessibility.spec.ts, visual-regression.spec.ts. Fixtures: tests/fixtures/engine-outputs/*.json. Config: playwright.config.ts.",
+              "example": "test('student can complete discovery and view results', async ({ page }) => { await page.goto('/student/discovery'); await page.click('[data-testid=station-embedded]'); // ... interact with stations ... await page.waitForURL('/student/discovery/results'); await expect(page.locator('[data-testid=radar-chart]')).toBeVisible(); });"
+            },
+            "quality_scores": { "role": 8, "objective": 9, "context": 9, "input_data": 9, "task": 9, "constraints": 9, "output_format": 8, "example": 9 },
+            "revisions_needed": []
+          },
+          {
+            "task_id": "P7-T3",
+            "task_name": "Load Testing & Performance Optimization",
+            "task_description": "Design load tests simulating 10,000 concurrent students and optimize system performance.",
+            "assigned_model": "Gemini 3.1 Pro",
+            "assignment_reason": "Long-context data analysis for performance profiling and optimization research across the full stack.",
+            "prompt": {
+              "role": "You are a Performance Engineering Specialist designing load testing strategies and optimization plans for AI-powered educational SaaS platforms serving thousands of concurrent users.",
+              "objective": "Design and specify comprehensive load tests for Project Eureka simulating 10,000 concurrent students, identify performance bottlenecks, and produce an optimization plan for both frontend (Core Web Vitals) and backend (API response times, AI inference throughput).",
+              "context": "Eureka must handle peak loads during exam periods (all students accessing assessments simultaneously), lecture upload bursts, and daily Context Card access. Frontend must meet: FCP < 1.5s, LCP < 2.5s, CLS < 0.1, TTI < 3.5s.",
+              "input_data": "System: FastAPI (Uvicorn, 4 workers), Next.js (Vercel), PostgreSQL, Qdrant, Redis, MinIO. AI: Groq API (free tier), Google AI Studio (free tier), NLLB-200 self-hosted. Peak: 10,000 students, 200 professors, 20 admins. Frontend: bundle must be < 150KB gzipped initial load.",
+              "task": "Step 1: Design load test scenarios (normal, peak, burst, endurance). Step 2: Specify k6 test scripts for backend. Step 3: Specify Lighthouse CI for frontend performance. Step 4: Define SLAs per endpoint. Step 5: Design optimization strategies (code splitting, caching, connection pooling, CDN, read replicas). Step 6: Produce monitoring dashboard specification (Grafana).",
+              "constraints": "Load tests must not run against production. Frontend optimization must not break SSR. AI API costs must be estimated and budgeted. Include bundle analysis report. Optimization changes must not affect data integrity.",
+              "output_format": "Load testing specification with scenario definitions, k6 scripts, SLA table, Lighthouse CI config, bottleneck analysis, optimization recommendations (prioritized), and Grafana dashboard JSON.",
+              "example": "Assessment Peak: 5,000 students submit within 30 min. Backend bottleneck: Engine 4 generation. Frontend bottleneck: assessment history chart rendering with 100+ data points. Mitigations: pre-generate batches, virtualize chart data."
+            },
+            "quality_scores": { "role": 8, "objective": 9, "context": 9, "input_data": 9, "task": 9, "constraints": 8, "output_format": 8, "example": 9 },
+            "revisions_needed": []
+          },
+          {
+            "task_id": "P7-T4",
+            "task_name": "Security Audit & GDPR Compliance",
+            "task_description": "Conduct security review for both frontend and backend, implement protections, and ensure GDPR compliance.",
+            "assigned_model": "Claude Sonnet 4.6",
+            "assignment_reason": "Accurate structured analysis for security policy evaluation and compliance checking.",
+            "prompt": {
+              "role": "You are an Application Security Engineer specializing in full-stack web security, GDPR/FERPA compliance, and AI system safety for platforms serving students.",
+              "objective": "Conduct comprehensive security audit of Eureka covering both the Next.js frontend (XSS, CSRF, auth storage) and FastAPI backend (injection, data exposure, AI API data minimization), then ensure GDPR compliance for student data.",
+              "context": "Eureka handles sensitive student data across frontend and backend. JWT tokens are in httpOnly cookies. SSE/WebSocket channels carry real-time updates. Student data is sent to third-party AI APIs. Anonymous feedback must be truly anonymous.",
+              "input_data": "Frontend: Next.js pages, auth flow, SSE/WebSocket handlers, localStorage usage. Backend: FastAPI endpoints, Pydantic models, AI API calls, PostgreSQL queries, Qdrant vectors. Data flows from 08_Orchestration_Map.md.",
+              "task": "Step 1: Audit frontend for XSS vectors (user-generated content rendering, markdown/KaTeX injection). Step 2: Audit auth flow (token storage, CSRF protection, session fixation). Step 3: Audit backend for OWASP Top 10 (SQL injection, SSRF, broken access control). Step 4: Audit AI API data transmission (PII sent to Groq/Google AI Studio). Step 5: Design data minimization strategy. Step 6: Implement GDPR compliance (consent, right to deletion, data portability, anonymization). Step 7: Design penetration test specification.",
+              "constraints": "Student PII must never be sent to third-party AI APIs without anonymization. Assessment answers may be sent but student_id must be replaced with ephemeral session ID. Feedback must be irreversibly anonymized. All data at rest encrypted (AES-256). All data in transit TLS 1.3. Frontend must sanitize all rendered user content.",
+              "output_format": "Complete security audit report: vulnerability matrix, remediation priority list, GDPR compliance checklist, data minimization specification, frontend security hardening guide, and penetration test plan.",
+              "example": "FINDING: Lecture companion viewer renders user-submitted markdown via dangerouslySetInnerHTML. RISK: XSS via professor-uploaded content. REMEDIATION: Use sanitize-html library before rendering, whitelist safe HTML tags. PRIORITY: High."
+            },
+            "quality_scores": { "role": 9, "objective": 9, "context": 9, "input_data": 9, "task": 9, "constraints": 10, "output_format": 9, "example": 9 },
+            "revisions_needed": []
+          },
+          {
+            "task_id": "P7-T5",
+            "task_name": "Production CI/CD & Deployment",
+            "task_description": "Build production-optimized Docker images, Kubernetes manifests, full CI/CD pipeline with test gates, Sentry monitoring, and domain/SSL configuration. Extends P1-T4's dev scaffold into production-grade infrastructure.",
+            "assigned_model": "GPT-5.1 Codex Mini",
+            "assignment_reason": "Infrastructure scripts and deployment configuration — well within operational scope. Extends the dev scaffold created in P1-T4.",
+            "prompt": {
+              "role": "You are a DevOps Engineer specializing in production deployment of Next.js + FastAPI applications with Kubernetes, CDN configuration, and full-stack monitoring.",
+              "objective": "Extend P1-T4's dev infrastructure into production-grade deployment: build optimized Docker images, create Kubernetes manifests, expand CI/CD with full test gates, configure Sentry monitoring, Grafana dashboards, and PagerDuty alerting. Deploy Next.js to Vercel and FastAPI to Kubernetes.",
+              "context": "Eureka already has a working Docker Compose dev environment (from P1-T4) and .env.example. This task takes those dev foundations and builds production infrastructure on top. The system serves 10,000+ students across multiple universities. Uptime target: 99.9%.",
+              "input_data": "Existing from P1-T4: docker-compose.yml, Dockerfile.backend.dev, Dockerfile.frontend.dev, .env.example, .github/workflows/lint.yml. New targets: staging + production Kubernetes deployments. Monitoring: Sentry (errors), Grafana (metrics), PagerDuty (alerts).",
+              "task": "Step 1: Create production-optimized multi-stage Dockerfiles (Dockerfile.backend.prod, Dockerfile.frontend.prod) with non-root users and minimal images. Step 2: Create Kubernetes manifests (Deployment, Service, Ingress, ConfigMap, Secrets, HPA, PDB). Step 3: Expand GitHub Actions CI/CD (.github/workflows/deploy.yml) with full test gates (unit + integration + e2e) and staging→production promotion. Step 4: Configure Vercel deployment for Next.js (build settings, env vars, preview deployments). Step 5: Configure CDN caching strategy. Step 6: Set up Sentry for frontend and backend. Step 7: Create Grafana dashboards and PagerDuty alerts. Step 8: Write RUNBOOK.md for common incidents.",
+              "constraints": "Zero-downtime deployments (rolling update strategy). Database migrations must be backward-compatible. Secrets managed via sealed-secrets or external-secrets operator. Backend must auto-scale 2→20 pods based on CPU/request rate. Frontend must score 90+ on Lighthouse performance. Must NOT duplicate P1-T4 dev infrastructure — extend it.",
+              "output_format": "Dockerfile.backend.prod, Dockerfile.frontend.prod, k8s/ manifests, .github/workflows/deploy.yml, vercel.json, sentry.config.ts, grafana-dashboards/*.json, pagerduty-alerts.yml, RUNBOOK.md.",
+              "example": "HPA config: minReplicas: 2, maxReplicas: 20, targetCPUUtilization: 70%, scaleDown stabilization: 300s. Rolling update: maxSurge: 1, maxUnavailable: 0."
+            },
+            "quality_scores": { "role": 8, "objective": 9, "context": 9, "input_data": 8, "task": 9, "constraints": 9, "output_format": 8, "example": 8 },
+            "revisions_needed": []
+          }
+        ]
+      }
+    ]
+  }
+}

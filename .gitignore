@@ -1,16 +1,31 @@
-# v0 sandbox internal files
-__v0_runtime_loader.js
-__v0_devtools.tsx
-__v0_jsx-dev-runtime.ts
-.snowflake/
-.v0-trash/
-.vercel/
-next.user-config.*
+# Common Ignores
+**/node_modules/
+**/.next/
+**/.DS_Store
+**/.snowflake/
+**/.vercel/
 
-# Environment variables
-.env*.local
+# Environment Files (Do not commit secrets)
+.env
+.env.local
+.env.development
+.env.production
+.env.staging
+**/.env*.local
 
-# Common ignores
-node_modules
-.next/
-.DS_Store
+# Python / virtual environment / testing
+**/venv/
+**/.venv/
+**/__pycache__/
+**/.pytest_cache/
+**/*.pyc
+**/*.pyo
+**/*.pyd
+
+# Application Generated Files & Tools
+**/logs/
+**/*.log
+node_portable/
+tools/
+backend/digital_twin/
+temp_lifespan.txt
