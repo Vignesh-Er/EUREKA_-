@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react'
 import {
@@ -14,7 +14,7 @@ import {
   Node,
 } from '@xyflow/react'
 import dagre from 'dagre'
-import '@xyflow/react/dist/style.css'
+
 import { X, Sparkles, BrainCircuit, Maximize2, Minimize2, Variable } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
@@ -22,7 +22,7 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import ReactMarkdown from 'react-markdown'
 import remarkMath from 'remark-math'
 import rehypeKatex from 'rehype-katex'
-import 'katex/dist/katex.min.css'
+
 import CosmicBackground from './CosmicBackground'
 
 const dagreGraph = new dagre.graphlib.Graph()

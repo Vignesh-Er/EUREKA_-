@@ -6,6 +6,8 @@ import { AuthProvider } from '@/lib/auth-context'
 import CosmicBackground from '@/components/CosmicBackground'
 import { EurekaChatbot } from '@/components/chat/eureka-chatbot'
 import './globals.css'
+import 'katex/dist/katex.min.css'
+import '@xyflow/react/dist/style.css'
 
 export const metadata: Metadata = {
   title: 'Eureka - AI Academic Intelligence Platform',
