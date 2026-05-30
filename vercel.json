@@ -1,15 +1,6 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "b_vNy9IRZa6ez-1774112432284/package.json",
-      "use": "@vercel/next"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "/b_vNy9IRZa6ez-1774112432284/$1"
-    }
-  ]
+  "buildCommand": "npm --prefix b_vNy9IRZa6ez-1774112432284 run build",
+  "installCommand": "npm install",
+  "outputDirectory": "b_vNy9IRZa6ez-1774112432284/.next"
 }
