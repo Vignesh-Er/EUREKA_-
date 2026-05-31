@@ -145,7 +145,7 @@ export default function LandingPage() {
           <div className="animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-100 relative z-10 max-w-5xl mx-auto">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-violet-300 text-xs font-semibold uppercase tracking-widest mb-8 backdrop-blur-md">
               <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-              Live Beta • 12,400 Active Students
+              Prototype — UI Demo
             </div>
             
             <h1 className="text-5xl md:text-7xl lg:text-8xl font-extrabold tracking-tight leading-[1.1] mb-8">
