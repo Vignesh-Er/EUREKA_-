@@ -7,21 +7,14 @@
     "b_vNy9IRZa6ez-1774112432284"
   ],
   "scripts": {
-    "build": "npm --prefix b_vNy9IRZa6ez-1774112432284 run build",
-    "vercel-build": "npm --prefix b_vNy9IRZa6ez-1774112432284 ci && npm --prefix b_vNy9IRZa6ez-1774112432284 run build",
-    "frontend:install": "npm --prefix b_vNy9IRZa6ez-1774112432284 install",
-    "frontend:dev": "npm --prefix b_vNy9IRZa6ez-1774112432284 run dev",
-    "frontend:build": "npm --prefix b_vNy9IRZa6ez-1774112432284 run build",
-    "frontend:start": "npm --prefix b_vNy9IRZa6ez-1774112432284 run start",
+    "build": "cd b_vNy9IRZa6ez-1774112432284 && npx next build",
+    "frontend:dev": "cd b_vNy9IRZa6ez-1774112432284 && npx next dev",
+    "frontend:build": "cd b_vNy9IRZa6ez-1774112432284 && npx next build",
+    "frontend:start": "cd b_vNy9IRZa6ez-1774112432284 && npx next start",
     "backend:install": "pip install -r backend/requirements.txt",
     "backend:dev": "cd backend && python main.py"
   },
   "engines": {
     "node": ">=18.0.0"
-  },
-  "dependencies": {
-    "next": "^15.0.3",
-    "react": "^19.0.0-rc-66855b96-20241106",
-    "react-dom": "^19.0.0-rc-66855b96-20241106"
   }
 }
