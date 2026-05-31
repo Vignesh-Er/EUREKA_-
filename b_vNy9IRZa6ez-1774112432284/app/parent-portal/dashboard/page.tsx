@@ -65,7 +65,7 @@ export default function ParentDashboard() {
           <div className="mt-0.5"><CalendarDays className="w-5 h-5 text-destructive" /></div>
           <div>
             <h3 className="font-semibold text-destructive">Crucial Period Active</h3>
-            <p className="text-sm text-destructive-foreground mt-1">
+            <p className="text-sm text-foreground/90 mt-1">
               {wardData.name} is currently engaging in <strong>{wardData.scheduleAlert}</strong>. 
               Extra mental support and a distraction-free home environment will highly benefit their productivity right now.
             </p>
